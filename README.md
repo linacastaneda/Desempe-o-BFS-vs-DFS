@@ -37,7 +37,8 @@ El análisis se concentra principalmente en **tiempo de ejecución** y **memoria
 │   ├── arboles.py
 │   ├── visualizacion.py
 │   ├── comparar_maquinas.py
-│   └── main.py
+│   ├── main.py
+│   └── README.md
 ├── resultados/
 ├── docs/
 ├── requirements.txt
@@ -125,6 +126,8 @@ python -m pip install -r requirements.txt
 
 ## Ejecución
 
+Todos los comandos siguientes se pueden ejecutar desde la raíz del repositorio.
+
 ### Mochila
 
 ```bash
@@ -145,24 +148,35 @@ python puzzle/arboles.py
 
 ### N-Reinas
 
-El módulo de N-Reinas tiene un flujo automatizado propio. Para conservar las rutas actuales de sus archivos de salida, se ejecuta desde su carpeta:
+Flujo completo:
 
 ```bash
-cd Nreinas
-python main.py
+python Nreinas/main.py
 ```
 
-Para visualizar el árbol de N=4:
+Análisis a partir de los datos existentes:
 
 ```bash
-python arboles.py 4
+python Nreinas/analisis_resultados.py
+```
+
+Gráficas a partir de los datos existentes:
+
+```bash
+python Nreinas/graficas.py
+```
+
+Árbol de búsqueda para N=4:
+
+```bash
+python Nreinas/arboles.py 4
 ```
 
 ## Resultados
 
 Los archivos CSV, resúmenes y gráficas generadas se encuentran en `resultados/`.
 
-Las gráficas de Puzzle se redujeron a un conjunto principal que evita redundancias y utiliza escala logarítmica cuando las diferencias entre BFS y DFS son de varios órdenes de magnitud.
+En Puzzle se mantiene un conjunto reducido de gráficas principales para evitar redundancias. En N-Reinas se generan cuatro gráficas principales y se utiliza escala logarítmica porque las diferencias entre BFS y DFS abarcan varios órdenes de magnitud.
 
 ## Nota sobre reproducibilidad
 
