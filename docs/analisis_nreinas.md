@@ -156,34 +156,6 @@ python3 main.py --comparar-maquinas # Comparar múltiples PCs
 
 ---
 
-## 9. Conclusiones y Recomendaciones
-
-### Para N-Reinas (problema de satisfacción):
-- **Usar DFS/Backtracking**: Memoria O(N), encuentra solución rápido
-- **Evitar BFS**: Memoria O(N!), impráctico para N ≥ 11
-
-### Para otros problemas:
-- **BFS** es mejor cuando: se necesita solución óptima en profundidad, espacio de estados pequeño, o grafo no muy ramificado
-- **DFS** es mejor cuando: espacio de estados grande/ramificado, solo se necesita una solución, memoria limitada
-
-### Para el informe del profesor:
-1. Mostrar tabla de resultados (Sección 3.1)
-2. Explicar Big-O teórico vs experimental (Sección 4)
-3. Mostrar gráfica de ratio (07_ratio_bfs_dfs.png)
-4. Mostrar árbol N=4 (arboles/arbol_n4.png)
-5. Concluir: DFS gana por backtracking natural y memoria constante
-
----
-
-## 10. Próximos Pasos (Para completar entrega grupal)
-
-- [ ] Agregar resultados de **Puzzle 3x3** (carpeta hermana `puzzle_3x3/`)
-- [ ] Agregar resultados de **Mochila** (ya existe en `mochila/`)
-- [ ] Unificar comparativas en `docs/comparacion_general.md`
-- [ ] Preparar presentación: 3 problemas, 2 algoritmos, 1 conclusión
-
----
-
 *Generado automáticamente por el experimento N-Reinas BFS vs DFS*  
 *Equipo: AMD Ryzen 7 7445HS | 15.26 GB RAM | Python 3.14.7*  
 *Fecha: 24/08/2026*
