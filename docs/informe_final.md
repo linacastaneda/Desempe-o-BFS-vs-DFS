@@ -4,8 +4,8 @@
 ## Integrantes
 
 - Lina Castañeda
-- ______________________________
-- ______________________________
+- Jorge García
+- Brayan Hernandez
 
 ---
 
