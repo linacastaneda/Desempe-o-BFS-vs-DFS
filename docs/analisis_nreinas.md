@@ -1,161 +1,112 @@
-# Análisis de Desempeño: BFS vs DFS en N-Reinas
+# Análisis de desempeño: BFS vs DFS en N-Reinas
 
----
+## 1. Objetivo
 
-## 1. Resumen Ejecutivo
+Comparar experimentalmente BFS y DFS en el problema de las N-Reinas utilizando como métricas principales:
 
-Este documento presenta el análisis experimental comparativo entre **Búsqueda en Anchura (BFS)** y **Búsqueda en Profundidad (DFS)** aplicados al problema de las **N-Reinas**, ejecutado en un **AMD Ryzen 7 7445HS w/ Radeon 740M Graphics** (12 núcleos, 15.26 GB RAM, Python 3.14.7).
+- Tiempo de ejecución.
+- Memoria pico utilizada.
 
-**Conclusión principal:** DFS es **dramáticamente superior** a BFS para este problema. A partir de N=11, BFS se vuelve impráctico (tiempos > 35s, memoria > 8MB) mientras DFS resuelve N=13 en ~1ms con < 2KB.
+Como métrica auxiliar se registra la cantidad de nodos explorados.
 
----
+## 2. Representación del problema
 
-## 2. Configuración Experimental
+El tablero se representa como una lista donde el índice corresponde a la columna y el valor corresponde a la fila ocupada por la reina:
+
+```python
+tablero = [1, 3, 0, 2]
+```
+
+Los estados se construyen columna por columna. Antes de generar un sucesor se verifica que la nueva reina no comparta fila ni diagonal con las ya colocadas.
+
+BFS y DFS se detienen al encontrar la primera solución completa.
+
+## 3. Configuración experimental
 
 | Parámetro | Valor |
-|-----------|-------|
-| **Problema** | N-Reinas (colocar N reinas en tablero N×N sin ataques) |
-| **Representación** | `tablero = [fila_col_0, fila_col_1, ...]` (una reina por columna) |
-| **Algoritmos** | BFS (cola FIFO) vs DFS (pila LIFO) |
-| **Métricas** | Tiempo (s), Memoria pico (KB), Nodos explorados |
-| **Rango N** | 4 a 13 |
-| **Simulaciones por N** | 100 (N≤10), 50 (N=11), 20 (N=12), 10 (N=13) |
-| **Total ejecuciones** | 1,560 (780 BFS + 780 DFS) |
-| **Herramientas** | `time.perf_counter()`, `tracemalloc`, 100% Python estándar |
+|---|---|
+| Problema | N-Reinas |
+| Algoritmos | BFS y DFS |
+| Rango de N | 4 a 13 |
+| Tiempo | `time.perf_counter()` |
+| Memoria | `tracemalloc` |
+| Métrica auxiliar | Nodos explorados |
 
----
+El número de repeticiones no es igual para todos los tamaños debido al costo creciente de BFS:
 
-## 3. Resultados Cuantitativos
+| N | Repeticiones por algoritmo |
+|---:|---:|
+| 4 a 10 | 100 |
+| 11 | 50 |
+| 12 | 20 |
+| 13 | 10 |
 
-### 3.1 Tabla Resumen (Promedios)
+Para cada N se repite el mismo problema determinista. Por tanto, las repeticiones permiten estudiar principalmente la variabilidad de las mediciones de tiempo y memoria.
 
-| N | Simul. | **BFS Tiempo** | **BFS Memoria** | **DFS Tiempo** | **DFS Memoria** | **Ratio Tiempo (BFS/DFS)** |
-|---|--------|----------------|-----------------|----------------|-----------------|----------------------------|
-| 4 | 100 | 0.000056 s | 1.3 KB | 0.000036 s | 0.15 KB | **1.5x** |
-| 5 | 100 | 0.000180 s | 1.7 KB | 0.000032 s | 0.20 KB | **5.6x** |
-| 6 | 100 | 0.000696 s | 3.0 KB | 0.000158 s | 0.35 KB | **4.4x** |
-| 7 | 100 | 0.0032 s | 13.6 KB | 0.000079 s | 0.43 KB | **40x** |
-| 8 | 100 | 0.0149 s | 58.9 KB | 0.00074 s | 0.57 KB | **20x** |
-| 9 | 100 | 0.076 s | 271 KB | 0.00035 s | 0.70 KB | **218x** |
-| 10 | 100 | 0.46 s | 1,569 KB | 0.00091 s | 0.93 KB | **501x** |
-| 11 | 50 | **2.7 s** | **8,172 KB** | 0.00057 s | 1.2 KB | **4,707x** |
-| 12 | 20 | **19.8 s** | **43,483 KB** | 0.0033 s | 1.5 KB | **5,928x** |
-| 13 | 10 | **112 s** | **234,770 KB** | 0.0012 s | 1.7 KB | **91,393x** |
+## 4. Resultados guardados
 
-### 3.2 Observaciones Clave
+Los promedios actuales del archivo `resultados/nreinas/datos/resumen.csv` son:
 
-1. **Tiempo**: BFS crece exponencialmente; en N=13 es **9.1 millones % más lento** que DFS
-2. **Memoria**: BFS explota (230 MB en N=13); DFS se mantiene constante ~O(N) (< 2 KB)
-3. **Nodos explorados**: BFS explora nivel completo; DFS hace backtracking eficiente
-4. **Variabilidad**: BFS tiene alta desviación estándar en N≥11 (algunas ejecuciones mucho peores)
+| N | BFS tiempo | BFS memoria | BFS nodos | DFS tiempo | DFS memoria | DFS nodos |
+|---:|---:|---:|---:|---:|---:|---:|
+| 4 | 0.000056 s | 1.32 KB | 16 | 0.000036 s | 0.15 KB | 9 |
+| 5 | 0.000180 s | 1.70 KB | 45 | 0.000032 s | 0.20 KB | 6 |
+| 6 | 0.000696 s | 2.99 KB | 150 | 0.000158 s | 0.35 KB | 32 |
+| 7 | 0.00319 s | 13.58 KB | 513 | 0.000079 s | 0.43 KB | 10 |
+| 8 | 0.0149 s | 58.86 KB | 1,966 | 0.000743 s | 0.57 KB | 114 |
+| 9 | 0.0763 s | 270.73 KB | 8,043 | 0.000349 s | 0.70 KB | 42 |
+| 10 | 0.457 s | 1,606.47 KB | 34,816 | 0.000913 s | 0.93 KB | 103 |
+| 11 | 2.70 s | 8,172.26 KB | 164,247 | 0.000574 s | 1.20 KB | 53 |
+| 12 | 19.76 s | 43,483.20 KB | 841,990 | 0.00333 s | 1.52 KB | 262 |
+| 13 | 111.99 s | 234,769.94 KB | 4,601,179 | 0.00123 s | 1.72 KB | 112 |
 
----
+## 5. Interpretación
 
-## 4. Análisis de Complejidad (Big-O)
+El patrón experimental es claro: a medida que aumenta N, BFS debe mantener una frontera cada vez más grande y procesar todos los estados de niveles anteriores antes de alcanzar una solución completa en profundidad N.
 
-| Aspecto | DFS (Backtracking) | BFS |
-|---------|-------------------|-----|
-| **Tiempo peor caso** | O(N!) | O(N!) |
-| **Espacio peor caso** | **O(N)** | **O(N!)** |
-| **Espacio típico** | O(N) | Exponencial |
-| **Primera solución** | Rápida (profundo primero) | Lenta (explora nivel completo) |
-| **Optimalidad profundidad** | No garantizada | Garantizada (mínima) |
+DFS, en cambio, profundiza una rama válida antes de regresar a otras alternativas. Con el orden de generación utilizado en esta implementación, encuentra una primera solución completa después de explorar muchos menos estados.
 
-### ¿Por qué DFS gana en N-Reinas?
+Para N=13, BFS explora aproximadamente 4,6 millones de nodos frente a 112 de DFS. Esta diferencia explica el fuerte contraste observado tanto en tiempo como en memoria.
 
-1. **Naturaleza del problema**: Solo necesitamos **una** solución válida, no la "más corta"
-2. **Backtracking natural**: DFS descarta ramas inválidas inmediatamente
-3. **Memoria constante**: Solo guarda el camino actual (stack depth = N)
-4. **BFS guarda nivel completo**: En N=13, el nivel 6 tiene ~4.6M nodos → 230 MB
+No se debe concluir que DFS sea universalmente superior a BFS. El resultado corresponde a este problema, a este criterio de terminación y al orden de generación de sucesores implementado.
 
----
+## 6. Decisiones de visualización
 
-## 5. Visualización del Árbol de Búsqueda (N=4)
+Las gráficas principales usan escala logarítmica porque las diferencias entre BFS y DFS abarcan varios órdenes de magnitud. Mantener una escala lineal haría que los valores de DFS quedaran visualmente comprimidos cerca de cero.
 
-Para N=4, el árbol completo tiene **17 nodos** y **2 soluciones**:
+Se generan cuatro gráficas principales:
 
-```
-                    [] (raíz)
-                 /  |  |  \
-               [0] [1] [2] [3]  ← Nivel 1: columna 0
-               /    |    |    \
-            [0,2]  [1,3] ...     ← Nivel 2: columna 1
-             |     |
-            ...   ...
-```
+1. Tiempo promedio por N.
+2. Memoria pico promedio por N.
+3. Nodos explorados promedio por N.
+4. Ratio BFS/DFS para tiempo, memoria y nodos.
 
-**BFS** visita nivel por nivel: `[], [0], [1], [2], [3], [0,2], [1,3], ...`
-**DFS** va profundo: `[], [0], [0,2], [0,2,?], backtrack, [1], [1,3], [1,3,0], [1,3,0,2] ✓`
+La gráfica de ratios permite leer directamente cuántas veces el promedio de BFS supera al promedio de DFS en cada métrica.
 
-DFS encuentra la primera solución `[1, 3, 0, 2]` en el **nodo 9** (orden DFS), BFS en el **nodo 15** (orden BFS).
+## 7. Árbol de búsqueda
 
-![Árbol N=4](../resultados/nreinas/graficas/arboles/arbol_n4.png)
+Para visualizar el comportamiento de ambos algoritmos se utiliza N=4, porque el árbol completo sigue siendo legible. Se construye el mismo árbol de estados factibles y se diferencia el orden de visita de BFS y DFS mediante la numeración de los nodos.
 
----
+Esta visualización tiene un propósito explicativo y no sustituye las mediciones de las ejecuciones experimentales.
 
-## 6. Gráficas Generadas
+## 8. Archivos de salida
 
-Ubicación: `resultados/nreinas/graficas/<hostname>/`
+Los datos se guardan en:
 
-| Archivo | Descripción |
-|---------|-------------|
-| `01_tiempo_barras.png` | Barras agrupadas tiempo BFS vs DFS |
-| `02_memoria_barras.png` | Barras agrupadas memoria BFS vs DFS |
-| `03_nodos_barras.png` | Barras agrupadas nodos BFS vs DFS |
-| `04_tiempo_subplots.png` | Escalas separadas BFS/DFS |
-| `05_memoria_subplots.png` | Escalas separadas BFS/DFS |
-| `06_nodos_subplots.png` | Escalas separadas BFS/DFS |
-| `07_ratio_bfs_dfs.png` | **Ratio BFS/DFS (clave)** - barras logarítmicas |
-| `08_boxplot_tiempo.png` | Distribución tiempo por N |
-| `09_boxplot_memoria.png` | Distribución memoria por N |
-| `10_boxplot_nodos.png` | Distribución nodos por N |
-| `arboles/arbol_n4.png` | Árbol completo BFS vs DFS lado a lado |
-
----
-
-## 7. Archivos de Datos
-
-Ubicación: `resultados/nreinas/datos/`
-
-| Archivo | Contenido |
-|---------|-----------|
-| `resultados.csv` | 1,560 filas: cada simulación con hostname, CPU, RAM, Python |
-| `info_maquina.json` | Hardware completo del equipo |
-| `resumen.csv` | Promedios por N y algoritmo (con estadísticas) |
-| `comparacion.csv` | Diferencias % BFS vs DFS por N |
-
----
-
-## 8. Código Fuente
-
-Ubicación: `Nreinas/`
-
-```
-Nreinas/
-├── main.py              # Ejecución automática (sin menú)
-├── n_reinas.py          # Validación y representación
-├── bfs.py               # BFS con deque
-├── dfs.py               # DFS con pila
-├── visualizacion.py     # Tablero gráfico con matplotlib
-├── medicion.py          # time.perf_counter + tracemalloc
-├── simulaciones.py      # Experimento completo N=4..13
-├── graficas.py          # 10 tipos de gráficas
-├── analisis_resultados.py # Stats + Big-O
-├── comparar_maquinas.py # Comparación multi-equipo
-├── arboles.py           # Visualización árbol N pequeño
-└── README.md
+```text
+resultados/nreinas/datos/
+├── resultados.csv
+├── resumen.csv
+├── comparacion.csv
+└── info_maquina.json
 ```
 
-### Ejecución
-```bash
-cd Nreinas
-python3 main.py                    # Experimento completo automático
-python3 arboles.py 4               # Ver árbol N=4
-python3 main.py --comparar-maquinas # Comparar múltiples PCs
+Las gráficas se guardan en:
+
+```text
+resultados/nreinas/graficas/
 ```
 
----
+## 9. Conclusión del problema N-Reinas
 
-*Generado automáticamente por el experimento N-Reinas BFS vs DFS*  
-*Equipo: AMD Ryzen 7 7445HS | 15.26 GB RAM | Python 3.14.7*  
-*Fecha: 24/08/2026*
+Para encontrar la primera solución del problema N-Reinas con las implementaciones evaluadas, DFS presenta un desempeño significativamente mejor que BFS. La diferencia se hace especialmente grande al aumentar N porque BFS conserva una frontera extensa y procesa una cantidad mucho mayor de estados antes de llegar al nivel donde aparecen las soluciones completas.
