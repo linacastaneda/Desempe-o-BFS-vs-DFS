@@ -21,7 +21,7 @@ import pandas as pd
 
 
 def cargar_datos(
-    archivo="resultados/resultados_puzzle.csv"
+    archivo="resultados/puzzle/datos/resultados.csv"
 ):
     """
     Carga el archivo CSV generado por las
@@ -62,6 +62,16 @@ def generar_resumen(datos):
     Esto incluye tanto las ejecuciones que encontraron
     solución como las que alcanzaron el límite
     máximo de nodos.
+
+    En este resumen global se analizan:
+
+    - Tiempo.
+    - Memoria.
+    - Nodos explorados.
+
+    Los movimientos y la profundidad se analizan
+    únicamente sobre las ejecuciones que terminaron
+    normalmente.
     """
 
     resumen = (
@@ -123,16 +133,6 @@ def generar_resumen(datos):
             nodos_promedio=(
                 "nodos",
                 "mean"
-            ),
-
-            movimientos_promedio=(
-                "movimientos",
-                "mean"
-            ),
-
-            profundidad_promedio=(
-                "profundidad",
-                "mean"
             )
         )
         .reset_index()
@@ -145,14 +145,12 @@ def comparar_algoritmos(resumen):
     """
     Compara los promedios globales de BFS y DFS.
 
-    En lugar de mostrar porcentajes negativos,
-    los resultados se expresan de manera más
-    comprensible:
+    Los resultados se expresan de manera legible:
 
-        - Cuánto menos tiempo utiliza BFS.
-        - Cuánto menos memoria utiliza BFS.
-        - Cuántas veces más tarda DFS.
-        - Cuántas veces más memoria utiliza DFS.
+    - Cuánto menos tiempo utiliza BFS.
+    - Cuánto menos memoria utiliza BFS.
+    - Cuántas veces más tarda DFS.
+    - Cuántas veces más memoria utiliza DFS.
     """
 
     bfs = resumen[
@@ -221,7 +219,9 @@ def analizar_limites(datos):
     resultados = []
 
     print()
-    print("EJECUCIONES QUE ALCANZARON EL LÍMITE")
+    print(
+        "EJECUCIONES QUE ALCANZARON EL LÍMITE"
+    )
     print()
 
     for algoritmo in [
@@ -234,11 +234,15 @@ def analizar_limites(datos):
         ]
 
         limite = datos_algoritmo[
-            datos_algoritmo["limite_alcanzado"] == True
+            datos_algoritmo[
+                "limite_alcanzado"
+            ] == True
         ]
 
         exitosas = datos_algoritmo[
-            datos_algoritmo["limite_alcanzado"] == False
+            datos_algoritmo[
+                "limite_alcanzado"
+            ] == False
         ]
 
         total = len(
@@ -286,10 +290,18 @@ def analizar_limites(datos):
 
         resultados.append(
             {
-                "algoritmo": algoritmo,
-                "total": total,
-                "exitosas": cantidad_exitosas,
-                "limite": cantidad_limite,
+                "algoritmo":
+                    algoritmo,
+
+                "total":
+                    total,
+
+                "exitosas":
+                    cantidad_exitosas,
+
+                "limite":
+                    cantidad_limite,
+
                 "porcentaje_limite":
                     porcentaje_limite
             }
@@ -307,10 +319,10 @@ def generar_resumen_exitosas(datos):
 
     De esta manera se puede distinguir:
 
-        1. El comportamiento global del algoritmo.
-        2. El comportamiento cuando realmente
-           logra completar la búsqueda sin alcanzar
-           el límite experimental.
+    1. El comportamiento global del algoritmo.
+    2. El comportamiento cuando realmente
+       logra completar la búsqueda sin alcanzar
+       el límite experimental.
     """
 
     exitosas = datos[
@@ -376,6 +388,7 @@ def mostrar_resumen(resumen):
     """
 
     print()
+
     print(
         "RESUMEN ESTADÍSTICO GLOBAL "
         "PUZZLE 3x3"
@@ -384,6 +397,7 @@ def mostrar_resumen(resumen):
     for _, fila in resumen.iterrows():
 
         print()
+
         print(
             fila["algoritmo"]
         )
@@ -433,16 +447,6 @@ def mostrar_resumen(resumen):
             f"{fila['nodos_promedio']:.2f}"
         )
 
-        print(
-            f"Movimientos promedio: "
-            f"{fila['movimientos_promedio']:.2f}"
-        )
-
-        print(
-            f"Profundidad promedio: "
-            f"{fila['profundidad_promedio']:.2f}"
-        )
-
 
 def mostrar_comparacion(comparacion):
     """
@@ -451,7 +455,11 @@ def mostrar_comparacion(comparacion):
     """
 
     print()
-    print("COMPARACIÓN GLOBAL BFS VS DFS")
+
+    print(
+        "COMPARACIÓN GLOBAL BFS VS DFS"
+    )
+
     print()
 
     print(
@@ -489,6 +497,7 @@ def mostrar_resumen_exitosas(
     """
 
     print()
+
     print(
         "RESUMEN DE EJECUCIONES "
         "QUE TERMINARON NORMALMENTE"
@@ -497,6 +506,7 @@ def mostrar_resumen_exitosas(
     for _, fila in resumen_exitosas.iterrows():
 
         print()
+
         print(
             fila["algoritmo"]
         )
@@ -549,26 +559,41 @@ def guardar_resultados_analisis(
 ):
     """
     Guarda los resultados estadísticos
-    en archivos CSV.
+    en la carpeta de datos del Puzzle.
     """
 
-    os.makedirs(
+    carpeta = os.path.join(
         "resultados",
+        "puzzle",
+        "datos"
+    )
+
+    os.makedirs(
+        carpeta,
         exist_ok=True
     )
 
     resumen.to_csv(
-        "resultados/resumen_puzzle.csv",
+        os.path.join(
+            carpeta,
+            "resumen.csv"
+        ),
         index=False
     )
 
     resumen_exitosas.to_csv(
-        "resultados/resumen_puzzle_exitosas.csv",
+        os.path.join(
+            carpeta,
+            "resumen_exitosas.csv"
+        ),
         index=False
     )
 
     resumen_limites.to_csv(
-        "resultados/limites_puzzle.csv",
+        os.path.join(
+            carpeta,
+            "limites.csv"
+        ),
         index=False
     )
 
@@ -624,18 +649,19 @@ if __name__ == "__main__":
     )
 
     print()
+
     print(
         "Archivos generados:"
     )
 
     print(
-        "resultados/resumen_puzzle.csv"
+        "resultados/puzzle/datos/resumen.csv"
     )
 
     print(
-        "resultados/resumen_puzzle_exitosas.csv"
+        "resultados/puzzle/datos/resumen_exitosas.csv"
     )
 
     print(
-        "resultados/limites_puzzle.csv"
+        "resultados/puzzle/datos/limites.csv"
     )
