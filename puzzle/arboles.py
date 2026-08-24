@@ -1,19 +1,3 @@
-"""
-Visualización del espacio de estados del Puzzle 3x3.
-
-Este archivo construye un árbol parcial del espacio de búsqueda
-a partir de un estado inicial y permite comparar visualmente
-el orden de recorrido de:
-
-- BFS
-- DFS
-
-El árbol utilizado es el mismo para ambos algoritmos.
-Lo que cambia es el orden en que los estados son visitados.
-
-La profundidad se limita para mantener la visualización legible.
-"""
-
 from collections import deque
 from pathlib import Path
 
@@ -32,36 +16,21 @@ def construir_arbol(
     profundidad_max=3
 ):
     """
-    Construye un árbol parcial del espacio de estados
-    del Puzzle 3x3.
-
-    Parámetros:
-        inicio:
-            Estado inicial del Puzzle.
-
-        profundidad_max:
-            Profundidad máxima que se mostrará
-            en el árbol.
-
-    Retorna:
-        grafo:
-            Grafo dirigido con los estados.
-
-        raiz:
-            Estado inicial utilizado como raíz.
+    Construye un árbol parcial común
+    del espacio de estados.
     """
 
     grafo = nx.DiGraph()
 
     raiz = inicio
 
-    cola = deque()
-
-    cola.append(
-        (
-            inicio,
-            0
-        )
+    cola = deque(
+        [
+            (
+                inicio,
+                0
+            )
+        ]
     )
 
     visitados = {
@@ -75,16 +44,24 @@ def construir_arbol(
 
     while cola:
 
-        estado, profundidad = cola.popleft()
+        estado, profundidad = (
+            cola.popleft()
+        )
 
-        if profundidad >= profundidad_max:
+        if (
+            profundidad
+            >= profundidad_max
+        ):
             continue
 
         for nuevo_estado in movimientos(
             estado
         ):
 
-            if nuevo_estado not in visitados:
+            if (
+                nuevo_estado
+                not in visitados
+            ):
 
                 visitados.add(
                     nuevo_estado
@@ -115,10 +92,7 @@ def obtener_orden_bfs(
     raiz
 ):
     """
-    Obtiene el orden en que BFS visita los nodos.
-
-    BFS utiliza una cola FIFO y explora
-    los estados nivel por nivel.
+    Recorrido BFS.
     """
 
     orden = []
@@ -126,10 +100,6 @@ def obtener_orden_bfs(
     cola = deque(
         [raiz]
     )
-
-    visitados = {
-        raiz
-    }
 
     while cola:
 
@@ -143,15 +113,9 @@ def obtener_orden_bfs(
             nodo
         ):
 
-            if hijo not in visitados:
-
-                visitados.add(
-                    hijo
-                )
-
-                cola.append(
-                    hijo
-                )
+            cola.append(
+                hijo
+            )
 
     return orden
 
@@ -161,10 +125,11 @@ def obtener_orden_dfs(
     raiz
 ):
     """
-    Obtiene el orden en que DFS visita los nodos.
+    Recorrido DFS.
 
-    DFS utiliza una pila LIFO y profundiza
-    una rama antes de regresar.
+    Los hijos se agregan a la pila
+    en el orden en que fueron generados,
+    reproduciendo la lógica del solver DFS.
     """
 
     orden = []
@@ -196,15 +161,12 @@ def obtener_orden_dfs(
             )
         )
 
-        # Se invierte el orden de los hijos
-        # para que el primer hijo generado
-        # sea también el primero en ser visitado
-        # por DFS.
-        hijos.reverse()
-
         for hijo in hijos:
 
-            if hijo not in visitados:
+            if (
+                hijo
+                not in visitados
+            ):
 
                 pila.append(
                     hijo
@@ -218,25 +180,30 @@ def calcular_posiciones(
     raiz
 ):
     """
-    Calcula posiciones jerárquicas para dibujar
-    el árbol de arriba hacia abajo.
+    Calcula posiciones jerárquicas.
     """
 
     niveles = {}
 
     for nodo in grafo.nodes:
 
-        nivel = nx.shortest_path_length(
-            grafo,
-            raiz,
-            nodo
+        nivel = (
+            nx.shortest_path_length(
+                grafo,
+                raiz,
+                nodo
+            )
         )
 
         if nivel not in niveles:
 
-            niveles[nivel] = []
+            niveles[
+                nivel
+            ] = []
 
-        niveles[nivel].append(
+        niveles[
+            nivel
+        ].append(
             nodo
         )
 
@@ -252,9 +219,10 @@ def calcular_posiciones(
             nodos
         ):
 
-            x = indice - (
-                cantidad - 1
-            ) / 2
+            x = (
+                indice
+                - (cantidad - 1) / 2
+            )
 
             y = -nivel
 
@@ -272,17 +240,7 @@ def estado_a_texto(
     estado
 ):
     """
-    Convierte un estado del Puzzle
-    en una representación de tres filas.
-
-    El cero se representa como un espacio
-    para que se parezca al tablero real.
-
-    Ejemplo:
-
-        123
-        5 6
-        478
+    Representa un estado como tablero 3x3.
     """
 
     valores = []
@@ -301,22 +259,10 @@ def estado_a_texto(
                 str(numero)
             )
 
-    fila_1 = "".join(
-        valores[0:3]
-    )
-
-    fila_2 = "".join(
-        valores[3:6]
-    )
-
-    fila_3 = "".join(
-        valores[6:9]
-    )
-
     return (
-        f"{fila_1}\n"
-        f"{fila_2}\n"
-        f"{fila_3}"
+        f"{''.join(valores[0:3])}\n"
+        f"{''.join(valores[3:6])}\n"
+        f"{''.join(valores[6:9])}"
     )
 
 
@@ -325,48 +271,33 @@ def crear_etiquetas(
     orden
 ):
     """
-    Crea las etiquetas de los nodos.
-
-    Cada nodo muestra:
-
-        - Número de visita.
-        - Configuración del Puzzle.
-
-    Si el estado corresponde a la meta,
-    se agrega la palabra META.
+    Crea etiquetas con número de visita
+    y estado del tablero.
     """
 
-    posiciones_orden = {}
-
-    for numero_visita, nodo in enumerate(
-        orden,
-        start=1
-    ):
-
-        posiciones_orden[
-            nodo
-        ] = numero_visita
+    posiciones = {
+        nodo: numero
+        for numero, nodo
+        in enumerate(
+            orden,
+            start=1
+        )
+    }
 
     etiquetas = {}
 
     for nodo in grafo.nodes:
 
-        numero = posiciones_orden[
-            nodo
-        ]
-
-        tablero = estado_a_texto(
-            nodo
-        )
-
         etiqueta = (
-            f"#{numero}\n"
-            f"{tablero}"
+            f"#{posiciones[nodo]}\n"
+            f"{estado_a_texto(nodo)}"
         )
 
         if nodo == META_PUZZLE:
 
-            etiqueta += "\nMETA"
+            etiqueta += (
+                "\nMETA"
+            )
 
         etiquetas[
             nodo
@@ -375,208 +306,17 @@ def crear_etiquetas(
     return etiquetas
 
 
-def mostrar_arbol(
-    grafo,
-    raiz,
-    orden,
-    algoritmo,
-    profundidad_max,
-    carpeta
+def mostrar_arbol_comparado(
+    inicio=INICIO_PUZZLE,
+    profundidad_max=3
 ):
     """
-    Dibuja el árbol parcial del Puzzle.
-
-    Los números dentro de los nodos indican
-    el orden de visita del algoritmo.
+    Guarda una única imagen con BFS
+    y DFS lado a lado.
     """
-
-    posiciones = calcular_posiciones(
-        grafo,
-        raiz
-    )
-
-    etiquetas = crear_etiquetas(
-        grafo,
-        orden
-    )
-
-    plt.figure(
-        figsize=(18, 10)
-    )
-
-    nx.draw_networkx_edges(
-        grafo,
-        posiciones,
-        arrows=True,
-        width=1.2
-    )
-
-    nx.draw_networkx_nodes(
-        grafo,
-        posiciones,
-        node_size=2200
-    )
-
-    nx.draw_networkx_labels(
-        grafo,
-        posiciones,
-        labels=etiquetas,
-        font_size=7
-    )
-
-    if META_PUZZLE in grafo.nodes:
-
-        nx.draw_networkx_nodes(
-            grafo,
-            posiciones,
-            nodelist=[
-                META_PUZZLE
-            ],
-            node_size=2900
-        )
-
-        nx.draw_networkx_labels(
-            grafo,
-            posiciones,
-            labels={
-                META_PUZZLE:
-                    etiquetas[META_PUZZLE]
-            },
-            font_size=7
-        )
-
-    plt.title(
-        f"Puzzle 3x3 - Recorrido {algoritmo}\n"
-        f"Profundidad visual: {profundidad_max}"
-    )
-
-    plt.axis(
-        "off"
-    )
-
-    carpeta.mkdir(
-        parents=True,
-        exist_ok=True
-    )
-
-    nombre_archivo = (
-        f"arbol_{algoritmo.lower()}_puzzle.png"
-    )
-
-    plt.savefig(
-        carpeta / nombre_archivo,
-        dpi=150,
-        bbox_inches="tight"
-    )
-
-    plt.show()
-
-
-def mostrar_secuencia(
-    orden,
-    algoritmo
-):
-    """
-    Muestra en consola el orden de visita
-    de los estados.
-    """
-
-    print()
-
-    print(
-        f"ORDEN DE RECORRIDO {algoritmo}"
-    )
-
-    print()
-
-    for numero, nodo in enumerate(
-        orden,
-        start=1
-    ):
-
-        print(
-            f"#{numero}: {nodo}"
-        )
-
-
-def mostrar_datos_arbol(
-    grafo,
-    profundidad_max
-):
-    """
-    Muestra información general
-    del árbol parcial generado.
-    """
-
-    print()
-
-    print(
-        "ÁRBOL PARCIAL DEL PUZZLE 3x3"
-    )
-
-    print()
-
-    print(
-        "Profundidad máxima visual:",
-        profundidad_max
-    )
-
-    print(
-        "Cantidad de estados mostrados:",
-        grafo.number_of_nodes()
-    )
-
-    print(
-        "Cantidad de conexiones:",
-        grafo.number_of_edges()
-    )
-
-    print()
-
-    print(
-        "Estado inicial:",
-        INICIO_PUZZLE
-    )
-
-    print(
-        "Estado meta:",
-        META_PUZZLE
-    )
-
-    print()
-
-    if META_PUZZLE in grafo.nodes:
-
-        print(
-            "La meta aparece dentro "
-            "del árbol visual."
-        )
-
-    else:
-
-        print(
-            "La meta NO aparece dentro "
-            "de la profundidad visual seleccionada."
-        )
-
-
-if __name__ == "__main__":
-
-    # Se utiliza una profundidad pequeña
-    # exclusivamente para la visualización.
-    #
-    # No se intenta representar todo el espacio
-    # de estados del Puzzle porque la gráfica
-    # sería demasiado grande e ilegible.
-
-    profundidad_max = 3
-
-    carpeta = Path(
-        "resultados/arboles_puzzle"
-    )
 
     grafo, raiz = construir_arbol(
-        INICIO_PUZZLE,
+        inicio,
         profundidad_max
     )
 
@@ -590,46 +330,135 @@ if __name__ == "__main__":
         raiz
     )
 
-    mostrar_datos_arbol(
+    posiciones = calcular_posiciones(
         grafo,
-        profundidad_max
+        raiz
     )
 
-    mostrar_secuencia(
-        orden_bfs,
-        "BFS"
+    carpeta = Path(
+        "resultados/puzzle/graficas/arboles"
     )
 
-    mostrar_secuencia(
-        orden_dfs,
-        "DFS"
+    carpeta.mkdir(
+        parents=True,
+        exist_ok=True
     )
 
-    mostrar_arbol(
-        grafo,
-        raiz,
-        orden_bfs,
-        "BFS",
-        profundidad_max,
+    figura, (
+        ax_bfs,
+        ax_dfs
+    ) = plt.subplots(
+        1,
+        2,
+        figsize=(24, 10)
+    )
+
+    configuraciones = [
+        (
+            ax_bfs,
+            orden_bfs,
+            "BFS - Nivel por nivel"
+        ),
+        (
+            ax_dfs,
+            orden_dfs,
+            "DFS - Profundidad"
+        )
+    ]
+
+    for (
+        eje,
+        orden,
+        titulo
+    ) in configuraciones:
+
+        etiquetas = crear_etiquetas(
+            grafo,
+            orden
+        )
+
+        nx.draw_networkx_edges(
+            grafo,
+            posiciones,
+            ax=eje,
+            arrows=True,
+            arrowsize=12
+        )
+
+        nx.draw_networkx_nodes(
+            grafo,
+            posiciones,
+            ax=eje,
+            node_size=1900
+        )
+
+        nx.draw_networkx_labels(
+            grafo,
+            posiciones,
+            ax=eje,
+            labels=etiquetas,
+            font_size=6
+        )
+
+        if (
+            META_PUZZLE
+            in grafo.nodes
+        ):
+
+            nx.draw_networkx_nodes(
+                grafo,
+                posiciones,
+                ax=eje,
+                nodelist=[
+                    META_PUZZLE
+                ],
+                node_size=2400
+            )
+
+        eje.set_title(
+            titulo,
+            fontsize=13,
+            fontweight="bold"
+        )
+
+        eje.axis(
+            "off"
+        )
+
+    figura.suptitle(
+        "Puzzle 3x3 - Árbol parcial BFS vs DFS\n"
+        f"Profundidad visual: {profundidad_max} | "
+        f"Estados mostrados: {grafo.number_of_nodes()}",
+        fontsize=15,
+        fontweight="bold"
+    )
+
+    plt.tight_layout()
+
+    ruta = (
         carpeta
+        / "arbol_puzzle.png"
     )
 
-    mostrar_arbol(
-        grafo,
-        raiz,
-        orden_dfs,
-        "DFS",
-        profundidad_max,
-        carpeta
+    plt.savefig(
+        ruta,
+        dpi=150,
+        bbox_inches="tight"
     )
+
+    plt.show()
 
     print()
 
     print(
-        "Árboles guardados correctamente."
+        "Árbol guardado en:",
+        ruta
     )
 
-    print(
-        "Carpeta:",
-        carpeta
+
+if __name__ == "__main__":
+
+    mostrar_arbol_comparado(
+        INICIO_PUZZLE,
+        profundidad_max=3
     )

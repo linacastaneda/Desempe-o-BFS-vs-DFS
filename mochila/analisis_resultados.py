@@ -1,52 +1,92 @@
+import os
+
 import pandas as pd
 
 
 def cargar_datos():
     """
-    Carga los resultados obtenidos en las
-    100 simulaciones de la mochila.
+    Carga los resultados de las simulaciones
+    de la mochila.
     """
 
-    ruta = "resultados/resultados_mochila.csv"
+    ruta = os.path.join(
+        "resultados",
+        "mochila",
+        "datos",
+        "resultados.csv"
+    )
 
-    datos = pd.read_csv(ruta)
+    datos = pd.read_csv(
+        ruta
+    )
 
     return datos
 
 
-def generar_resumen(datos):
+def generar_resumen(
+    datos
+):
     """
-    Calcula estadísticas descriptivas para
-    BFS y DFS según la cantidad de objetos.
-
-    Se analizan principalmente:
-
-        - Tiempo de ejecución.
-        - Memoria pico utilizada.
-
-    También se incluye la cantidad de nodos
-    explorados como información auxiliar.
+    Calcula estadísticas descriptivas
+    para BFS y DFS según la cantidad
+    de objetos.
     """
 
     resumen = (
         datos
         .groupby(
-            ["objetos", "algoritmo"]
+            [
+                "objetos",
+                "algoritmo"
+            ]
         )
         .agg(
-            tiempo_promedio=("tiempo", "mean"),
-            tiempo_mediana=("tiempo", "median"),
-            tiempo_minimo=("tiempo", "min"),
-            tiempo_maximo=("tiempo", "max"),
-            tiempo_desviacion=("tiempo", "std"),
+            tiempo_promedio=(
+                "tiempo",
+                "mean"
+            ),
+            tiempo_mediana=(
+                "tiempo",
+                "median"
+            ),
+            tiempo_minimo=(
+                "tiempo",
+                "min"
+            ),
+            tiempo_maximo=(
+                "tiempo",
+                "max"
+            ),
+            tiempo_desviacion=(
+                "tiempo",
+                "std"
+            ),
 
-            memoria_promedio=("memoria_kb", "mean"),
-            memoria_mediana=("memoria_kb", "median"),
-            memoria_minima=("memoria_kb", "min"),
-            memoria_maxima=("memoria_kb", "max"),
-            memoria_desviacion=("memoria_kb", "std"),
+            memoria_promedio=(
+                "memoria_kb",
+                "mean"
+            ),
+            memoria_mediana=(
+                "memoria_kb",
+                "median"
+            ),
+            memoria_minima=(
+                "memoria_kb",
+                "min"
+            ),
+            memoria_maxima=(
+                "memoria_kb",
+                "max"
+            ),
+            memoria_desviacion=(
+                "memoria_kb",
+                "std"
+            ),
 
-            nodos_promedio=("nodos", "mean")
+            nodos_promedio=(
+                "nodos",
+                "mean"
+            )
         )
         .reset_index()
     )
@@ -54,13 +94,12 @@ def generar_resumen(datos):
     return resumen
 
 
-def comparar_algoritmos(resumen):
+def comparar_algoritmos(
+    resumen
+):
     """
-    Calcula la diferencia porcentual entre BFS y DFS
-    para tiempo y memoria en cada tamaño del problema.
-
-    El porcentaje indica cuánto mayor es el valor de BFS
-    respecto a DFS.
+    Compara BFS y DFS para cada
+    cantidad de objetos.
     """
 
     bfs = resumen[
@@ -75,36 +114,60 @@ def comparar_algoritmos(resumen):
         bfs,
         dfs,
         on="objetos",
-        suffixes=("_bfs", "_dfs")
+        suffixes=(
+            "_bfs",
+            "_dfs"
+        )
     )
 
-    comparacion["diferencia_tiempo_porcentaje"] = (
+    comparacion[
+        "diferencia_tiempo_porcentaje"
+    ] = (
         (
-            comparacion["tiempo_promedio_bfs"]
-            - comparacion["tiempo_promedio_dfs"]
+            comparacion[
+                "tiempo_promedio_bfs"
+            ]
+            - comparacion[
+                "tiempo_promedio_dfs"
+            ]
         )
-        / comparacion["tiempo_promedio_dfs"]
+        / comparacion[
+            "tiempo_promedio_dfs"
+        ]
     ) * 100
 
-    comparacion["diferencia_memoria_porcentaje"] = (
+    comparacion[
+        "diferencia_memoria_porcentaje"
+    ] = (
         (
-            comparacion["memoria_promedio_bfs"]
-            - comparacion["memoria_promedio_dfs"]
+            comparacion[
+                "memoria_promedio_bfs"
+            ]
+            - comparacion[
+                "memoria_promedio_dfs"
+            ]
         )
-        / comparacion["memoria_promedio_dfs"]
+        / comparacion[
+            "memoria_promedio_dfs"
+        ]
     ) * 100
 
     return comparacion
 
 
-def mostrar_resumen(resumen):
+def mostrar_resumen(
+    resumen
+):
     """
-    Muestra en consola las estadísticas
-    principales de BFS y DFS.
+    Muestra las estadísticas principales.
     """
 
     print()
-    print("RESUMEN ESTADÍSTICO")
+
+    print(
+        "RESUMEN ESTADÍSTICO - MOCHILA"
+    )
+
     print()
 
     for _, fila in resumen.iterrows():
@@ -142,35 +205,111 @@ def mostrar_resumen(resumen):
         print()
 
 
-def mostrar_comparacion(comparacion):
+def mostrar_comparacion(
+    comparacion
+):
     """
-    Muestra la diferencia porcentual
-    entre BFS y DFS.
+    Presenta la comparación entre
+    BFS y DFS.
     """
 
     print()
-    print("COMPARACIÓN BFS VS DFS")
+
+    print(
+        "COMPARACIÓN BFS VS DFS - MOCHILA"
+    )
+
     print()
 
     for _, fila in comparacion.iterrows():
 
-        print(
-            f"{int(fila['objetos'])} objetos"
+        objetos = int(
+            fila["objetos"]
         )
 
-        print(
-            f"BFS usa "
-            f"{fila['diferencia_tiempo_porcentaje']:.2f}% "
-            f"más tiempo que DFS"
-        )
+        diferencia_tiempo = fila[
+            "diferencia_tiempo_porcentaje"
+        ]
+
+        diferencia_memoria = fila[
+            "diferencia_memoria_porcentaje"
+        ]
 
         print(
-            f"BFS usa "
-            f"{fila['diferencia_memoria_porcentaje']:.2f}% "
-            f"más memoria que DFS"
+            f"{objetos} objetos"
         )
+
+        if diferencia_tiempo >= 0:
+
+            print(
+                f"BFS utilizó "
+                f"{diferencia_tiempo:.2f}% "
+                f"más tiempo que DFS."
+            )
+
+        else:
+
+            print(
+                f"BFS utilizó "
+                f"{abs(diferencia_tiempo):.2f}% "
+                f"menos tiempo que DFS."
+            )
+
+        if diferencia_memoria >= 0:
+
+            print(
+                f"BFS utilizó "
+                f"{diferencia_memoria:.2f}% "
+                f"más memoria que DFS."
+            )
+
+        else:
+
+            print(
+                f"BFS utilizó "
+                f"{abs(diferencia_memoria):.2f}% "
+                f"menos memoria que DFS."
+            )
 
         print()
+
+
+def guardar_analisis(
+    resumen,
+    comparacion
+):
+    """
+    Guarda los archivos de análisis en:
+
+        resultados/mochila/datos/
+    """
+
+    carpeta = os.path.join(
+        "resultados",
+        "mochila",
+        "datos"
+    )
+
+    os.makedirs(
+        carpeta,
+        exist_ok=True
+    )
+
+    resumen.to_csv(
+        os.path.join(
+            carpeta,
+            "resumen.csv"
+        ),
+        index=False
+    )
+
+    comparacion.to_csv(
+        os.path.join(
+            carpeta,
+            "comparacion.csv"
+        ),
+        index=False
+    )
 
 
 if __name__ == "__main__":
@@ -193,16 +332,12 @@ if __name__ == "__main__":
         comparacion
     )
 
-    resumen.to_csv(
-        "resultados/resumen_mochila.csv",
-        index=False
-    )
-
-    comparacion.to_csv(
-        "resultados/comparacion_mochila.csv",
-        index=False
+    guardar_analisis(
+        resumen,
+        comparacion
     )
 
     print(
-        "Archivos de análisis guardados correctamente."
+        "Archivos de análisis guardados en "
+        "resultados/mochila/datos/"
     )

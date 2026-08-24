@@ -1,39 +1,36 @@
 from pathlib import Path
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 def cargar_resultados(
-    archivo="resultados/resultados_mochila.csv"
+    archivo="resultados/mochila/datos/resultados.csv"
 ):
     """
-    Carga el archivo CSV generado por las
-    100 simulaciones del problema de la mochila.
+    Carga las 100 simulaciones de Mochila.
     """
 
-    datos = pd.read_csv(
+    return pd.read_csv(
         archivo
     )
 
-    return datos
 
-
-def calcular_promedios(datos):
+def calcular_promedios(
+    datos
+):
     """
-    Calcula los promedios de tiempo,
-    memoria y nodos explorados.
-
-    Los resultados se agrupan por:
-
-        - Cantidad de objetos.
-        - Algoritmo.
+    Calcula los promedios por cantidad
+    de objetos y algoritmo.
     """
 
-    promedios = (
+    return (
         datos
         .groupby(
-            ["objetos", "algoritmo"],
+            [
+                "objetos",
+                "algoritmo"
+            ],
             as_index=False
         )
         .agg(
@@ -41,10 +38,12 @@ def calcular_promedios(datos):
                 "tiempo",
                 "mean"
             ),
+
             memoria_promedio=(
                 "memoria_kb",
                 "mean"
             ),
+
             nodos_promedio=(
                 "nodos",
                 "mean"
@@ -52,16 +51,13 @@ def calcular_promedios(datos):
         )
     )
 
-    return promedios
-
 
 def guardar_y_mostrar(
     carpeta,
     nombre_archivo
 ):
     """
-    Guarda la gráfica actual y posteriormente
-    la muestra en pantalla.
+    Guarda y muestra la figura actual.
     """
 
     plt.tight_layout()
@@ -80,8 +76,8 @@ def grafica_tiempo_simulaciones(
     carpeta
 ):
     """
-    Compara el tiempo de BFS y DFS
-    en cada una de las 100 simulaciones.
+    Tiempo de BFS y DFS en las
+    100 simulaciones.
     """
 
     bfs = datos[
@@ -129,7 +125,7 @@ def grafica_tiempo_simulaciones(
 
     guardar_y_mostrar(
         carpeta,
-        "tiempo_simulaciones_mochila.png"
+        "01_tiempo_simulaciones.png"
     )
 
 
@@ -138,8 +134,8 @@ def grafica_memoria_simulaciones(
     carpeta
 ):
     """
-    Compara la memoria pico utilizada
-    por BFS y DFS en las 100 simulaciones.
+    Memoria pico de BFS y DFS
+    en las 100 simulaciones.
     """
 
     bfs = datos[
@@ -175,7 +171,7 @@ def grafica_memoria_simulaciones(
     )
 
     plt.title(
-        "Mochila 0/1 - Consumo de memoria BFS vs DFS"
+        "Mochila 0/1 - Memoria BFS vs DFS"
     )
 
     plt.legend()
@@ -187,7 +183,7 @@ def grafica_memoria_simulaciones(
 
     guardar_y_mostrar(
         carpeta,
-        "memoria_simulaciones_mochila.png"
+        "02_memoria_simulaciones.png"
     )
 
 
@@ -196,11 +192,8 @@ def grafica_tiempo_por_objetos(
     carpeta
 ):
     """
-    Muestra cómo cambia el tiempo promedio
-    cuando aumenta la cantidad de objetos.
-
-    Esta gráfica es especialmente importante
-    para analizar la escalabilidad.
+    Tiempo promedio según cantidad
+    de objetos.
     """
 
     bfs = promedios[
@@ -238,8 +231,7 @@ def grafica_tiempo_por_objetos(
     )
 
     plt.title(
-        "Mochila 0/1 - Tiempo promedio "
-        "según la cantidad de objetos"
+        "Mochila 0/1 - Tiempo promedio según tamaño"
     )
 
     plt.legend()
@@ -251,7 +243,7 @@ def grafica_tiempo_por_objetos(
 
     guardar_y_mostrar(
         carpeta,
-        "tiempo_por_objetos_mochila.png"
+        "03_tiempo_por_objetos.png"
     )
 
 
@@ -260,8 +252,7 @@ def grafica_memoria_por_objetos(
     carpeta
 ):
     """
-    Muestra cómo cambia el consumo promedio
-    de memoria cuando aumenta la cantidad
+    Memoria promedio según cantidad
     de objetos.
     """
 
@@ -300,8 +291,7 @@ def grafica_memoria_por_objetos(
     )
 
     plt.title(
-        "Mochila 0/1 - Memoria promedio "
-        "según la cantidad de objetos"
+        "Mochila 0/1 - Memoria promedio según tamaño"
     )
 
     plt.legend()
@@ -313,56 +303,17 @@ def grafica_memoria_por_objetos(
 
     guardar_y_mostrar(
         carpeta,
-        "memoria_por_objetos_mochila.png"
+        "04_memoria_por_objetos.png"
     )
-
-
-def mostrar_resumen(
-    promedios
-):
-    """
-    Muestra en consola los resultados promedio
-    para cada tamaño del problema.
-    """
-
-    print()
-    print(
-        "PROMEDIOS DE LAS SIMULACIONES - MOCHILA"
-    )
-    print()
-
-    for _, fila in promedios.iterrows():
-
-        print(
-            f"{int(fila['objetos'])} objetos - "
-            f"{fila['algoritmo']}"
-        )
-
-        print(
-            f"Tiempo promedio: "
-            f"{fila['tiempo_promedio']:.8f} segundos"
-        )
-
-        print(
-            f"Memoria promedio: "
-            f"{fila['memoria_promedio']:.4f} KB"
-        )
-
-        print(
-            f"Nodos promedio: "
-            f"{fila['nodos_promedio']:.2f}"
-        )
-
-        print()
 
 
 def generar_graficas(
-    archivo="resultados/resultados_mochila.csv",
-    carpeta="resultados/graficas_mochila"
+    archivo="resultados/mochila/datos/resultados.csv",
+    carpeta="resultados/mochila/graficas/comparacion"
 ):
     """
-    Genera y guarda las cuatro gráficas principales
-    del análisis del problema de la mochila.
+    Genera las cuatro gráficas principales
+    de Mochila.
     """
 
     datos = cargar_resultados(
@@ -380,10 +331,6 @@ def generar_graficas(
     carpeta.mkdir(
         parents=True,
         exist_ok=True
-    )
-
-    mostrar_resumen(
-        promedios
     )
 
     grafica_tiempo_simulaciones(
@@ -407,12 +354,9 @@ def generar_graficas(
     )
 
     print()
-    print(
-        "Se generaron las 4 gráficas principales."
-    )
 
     print(
-        "Carpeta:",
+        "Gráficas guardadas en:",
         carpeta
     )
 

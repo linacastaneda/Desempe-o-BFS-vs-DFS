@@ -1,6 +1,6 @@
-import random
 import csv
 import os
+import random
 
 from bfs_dfs_mochila import bfs_mochila, dfs_mochila
 from medicion import medir_algoritmo
@@ -12,21 +12,26 @@ def generar_mochila(cantidad_objetos):
     de la mochila 0/1.
 
     Cada objeto tiene:
+
         - Un peso entre 1 y 15.
         - Un valor entre 1 y 30.
 
     La capacidad de la mochila corresponde
-    aproximadamente al 40 % del peso total
-    de todos los objetos.
+    aproximadamente al 40 % del peso total.
 
     Parámetros:
-        cantidad_objetos: cantidad de objetos
-        que tendrá la mochila.
+        cantidad_objetos:
+            Cantidad de objetos de la instancia.
 
     Retorna:
-        pesos: lista de pesos generados.
-        valores: lista de valores generados.
-        capacidad: capacidad máxima de la mochila.
+        pesos:
+            Lista de pesos.
+
+        valores:
+            Lista de valores.
+
+        capacidad:
+            Capacidad máxima de la mochila.
     """
 
     pesos = []
@@ -34,20 +39,40 @@ def generar_mochila(cantidad_objetos):
 
     for _ in range(cantidad_objetos):
 
-        peso = random.randint(1, 15)
-        valor = random.randint(1, 30)
+        peso = random.randint(
+            1,
+            15
+        )
 
-        pesos.append(peso)
-        valores.append(valor)
+        valor = random.randint(
+            1,
+            30
+        )
 
-    peso_total = sum(pesos)
+        pesos.append(
+            peso
+        )
+
+        valores.append(
+            valor
+        )
+
+    peso_total = sum(
+        pesos
+    )
 
     capacidad = max(
         1,
-        int(peso_total * 0.40)
+        int(
+            peso_total * 0.40
+        )
     )
 
-    return pesos, valores, capacidad
+    return (
+        pesos,
+        valores,
+        capacidad
+    )
 
 
 def ejecutar_simulaciones():
@@ -55,27 +80,29 @@ def ejecutar_simulaciones():
     Ejecuta 100 simulaciones del problema
     de la mochila 0/1.
 
-    Se utilizan cinco tamaños diferentes:
+    Se utilizan cinco tamaños:
 
-        5 objetos
-        8 objetos
-        10 objetos
-        12 objetos
-        15 objetos
+        - 5 objetos.
+        - 8 objetos.
+        - 10 objetos.
+        - 12 objetos.
+        - 15 objetos.
 
-    Para cada tamaño se generan 20 mochilas
-    aleatorias.
+    Para cada tamaño se generan 20
+    instancias diferentes.
 
-    Cada mochila es resuelta tanto por BFS
-    como por DFS utilizando exactamente
+    Cada instancia se resuelve tanto con
+    BFS como con DFS utilizando exactamente
     los mismos pesos, valores y capacidad.
-
-    Esto permite comparar de manera justa
-    el tiempo de ejecución y el consumo
-    de memoria de ambos algoritmos.
     """
 
-    tamanos = [5, 8, 10, 12, 15]
+    tamanos = [
+        5,
+        8,
+        10,
+        12,
+        15
+    ]
 
     simulaciones_por_tamano = 20
 
@@ -93,10 +120,14 @@ def ejecutar_simulaciones():
             "objetos..."
         )
 
-        for _ in range(simulaciones_por_tamano):
+        for _ in range(
+            simulaciones_por_tamano
+        ):
 
-            pesos, valores, capacidad = generar_mochila(
-                cantidad_objetos
+            pesos, valores, capacidad = (
+                generar_mochila(
+                    cantidad_objetos
+                )
             )
 
             resultado_bfs = medir_algoritmo(
@@ -113,46 +144,89 @@ def ejecutar_simulaciones():
                 capacidad
             )
 
-            if resultado_bfs["valor"] != resultado_dfs["valor"]:
+            if (
+                resultado_bfs["valor"]
+                != resultado_dfs["valor"]
+            ):
 
                 print(
-                    "Advertencia: BFS y DFS encontraron "
-                    "resultados diferentes en la simulación",
+                    "Advertencia: BFS y DFS "
+                    "obtuvieron valores diferentes "
+                    "en la simulación",
                     numero_simulacion
                 )
 
             resultados.append(
                 {
-                    "simulacion": numero_simulacion,
-                    "objetos": cantidad_objetos,
-                    "algoritmo": "BFS",
-                    "pesos": pesos,
-                    "valores": valores,
-                    "capacidad": capacidad,
-                    "tiempo": resultado_bfs["tiempo"],
-                    "memoria_kb": resultado_bfs["memoria_kb"],
-                    "nodos": resultado_bfs["nodos"],
-                    "valor_optimo": resultado_bfs["valor"]
+                    "simulacion":
+                        numero_simulacion,
+
+                    "objetos":
+                        cantidad_objetos,
+
+                    "algoritmo":
+                        "BFS",
+
+                    "pesos":
+                        pesos,
+
+                    "valores":
+                        valores,
+
+                    "capacidad":
+                        capacidad,
+
+                    "tiempo":
+                        resultado_bfs["tiempo"],
+
+                    "memoria_kb":
+                        resultado_bfs["memoria_kb"],
+
+                    "nodos":
+                        resultado_bfs["nodos"],
+
+                    "valor_optimo":
+                        resultado_bfs["valor"]
                 }
             )
 
             resultados.append(
                 {
-                    "simulacion": numero_simulacion,
-                    "objetos": cantidad_objetos,
-                    "algoritmo": "DFS",
-                    "pesos": pesos,
-                    "valores": valores,
-                    "capacidad": capacidad,
-                    "tiempo": resultado_dfs["tiempo"],
-                    "memoria_kb": resultado_dfs["memoria_kb"],
-                    "nodos": resultado_dfs["nodos"],
-                    "valor_optimo": resultado_dfs["valor"]
+                    "simulacion":
+                        numero_simulacion,
+
+                    "objetos":
+                        cantidad_objetos,
+
+                    "algoritmo":
+                        "DFS",
+
+                    "pesos":
+                        pesos,
+
+                    "valores":
+                        valores,
+
+                    "capacidad":
+                        capacidad,
+
+                    "tiempo":
+                        resultado_dfs["tiempo"],
+
+                    "memoria_kb":
+                        resultado_dfs["memoria_kb"],
+
+                    "nodos":
+                        resultado_dfs["nodos"],
+
+                    "valor_optimo":
+                        resultado_dfs["valor"]
                 }
             )
 
             print(
-                f"Simulación {numero_simulacion}: "
+                f"Simulación "
+                f"{numero_simulacion}: "
                 f"{cantidad_objetos} objetos"
             )
 
@@ -161,20 +235,20 @@ def ejecutar_simulaciones():
     return resultados
 
 
-def guardar_resultados(resultados):
+def guardar_resultados(
+    resultados
+):
     """
-    Guarda en un archivo CSV los resultados
-    obtenidos durante las simulaciones.
+    Guarda las simulaciones en:
 
-    Además de las métricas de desempeño,
-    se almacenan los pesos y valores utilizados
-    en cada instancia.
-
-    Esto permite identificar y reproducir
-    exactamente cada problema de mochila.
+        resultados/mochila/datos/resultados.csv
     """
 
-    carpeta_resultados = "resultados"
+    carpeta_resultados = os.path.join(
+        "resultados",
+        "mochila",
+        "datos"
+    )
 
     os.makedirs(
         carpeta_resultados,
@@ -183,7 +257,7 @@ def guardar_resultados(resultados):
 
     ruta_archivo = os.path.join(
         carpeta_resultados,
-        "resultados_mochila.csv"
+        "resultados.csv"
     )
 
     columnas = [
@@ -213,7 +287,9 @@ def guardar_resultados(resultados):
 
         escritor.writeheader()
 
-        escritor.writerows(resultados)
+        escritor.writerows(
+            resultados
+        )
 
     print()
 
@@ -225,13 +301,17 @@ def guardar_resultados(resultados):
 
 if __name__ == "__main__":
 
-    # La semilla permite que las mismas mochilas
-    # puedan volver a generarse en futuras ejecuciones.
-    random.seed(42)
+    random.seed(
+        42
+    )
 
-    resultados = ejecutar_simulaciones()
+    resultados = (
+        ejecutar_simulaciones()
+    )
 
-    guardar_resultados(resultados)
+    guardar_resultados(
+        resultados
+    )
 
     print()
 

@@ -1,49 +1,25 @@
 from collections import deque
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import networkx as nx
 
 
-def construir_arbol_mochila(pesos, valores, capacidad):
+def construir_arbol_mochila(
+    pesos,
+    valores,
+    capacidad
+):
     """
-    Construye el árbol de decisiones del problema
-    de la mochila 0/1.
-
-    Cada nodo representa un estado con:
-
-        indice:
-            objeto que se evaluará a continuación.
-
-        peso:
-            peso acumulado de los objetos seleccionados.
-
-        valor:
-            valor acumulado de los objetos seleccionados.
-
-        seleccionados:
-            índices de los objetos incluidos en la mochila.
-
-    Cada objeto genera como máximo dos decisiones:
-
-        - No tomar el objeto.
-        - Tomar el objeto.
-
-    La opción de tomar solo se crea si no supera
-    la capacidad máxima de la mochila.
-
-    Retorna:
-        grafo:
-            árbol de estados representado con NetworkX.
-
-        raiz:
-            identificador del nodo inicial.
+    Construye el árbol completo de decisiones
+    de una instancia pequeña de Mochila 0/1.
     """
 
     grafo = nx.DiGraph()
 
-    contador_nodos = 0
+    contador = 0
 
-    raiz = contador_nodos
+    raiz = contador
 
     grafo.add_node(
         raiz,
@@ -53,64 +29,74 @@ def construir_arbol_mochila(pesos, valores, capacidad):
         seleccionados=[]
     )
 
-    contador_nodos += 1
+    contador += 1
 
-    cola = deque()
-
-    cola.append(raiz)
+    cola = deque(
+        [raiz]
+    )
 
     while cola:
 
-        nodo_actual = cola.popleft()
+        nodo = cola.popleft()
 
-        datos = grafo.nodes[nodo_actual]
+        datos = grafo.nodes[
+            nodo
+        ]
 
-        indice = datos["indice"]
-        peso_actual = datos["peso"]
-        valor_actual = datos["valor"]
-        seleccionados = datos["seleccionados"]
+        indice = datos[
+            "indice"
+        ]
 
-        # Si ya se evaluaron todos los objetos,
-        # el nodo es una hoja del árbol.
+        peso = datos[
+            "peso"
+        ]
+
+        valor = datos[
+            "valor"
+        ]
+
+        seleccionados = datos[
+            "seleccionados"
+        ]
+
         if indice == len(pesos):
             continue
 
-        # Se crea primero la opción de no tomar
-        # el objeto actual.
-        nodo_no_tomar = contador_nodos
+        nodo_no_tomar = contador
 
-        contador_nodos += 1
+        contador += 1
 
         grafo.add_node(
             nodo_no_tomar,
             indice=indice + 1,
-            peso=peso_actual,
-            valor=valor_actual,
+            peso=peso,
+            valor=valor,
             seleccionados=seleccionados.copy()
         )
 
         grafo.add_edge(
-            nodo_actual,
+            nodo,
             nodo_no_tomar,
             decision=f"No tomar {indice + 1}"
         )
 
-        cola.append(nodo_no_tomar)
+        cola.append(
+            nodo_no_tomar
+        )
 
-        # Se calcula el peso que tendría la mochila
-        # si se seleccionara el objeto actual.
-        nuevo_peso = peso_actual + pesos[indice]
+        nuevo_peso = (
+            peso
+            + pesos[indice]
+        )
 
-        # Solo se crea la rama "Tomar" si la capacidad
-        # máxima no es superada.
         if nuevo_peso <= capacidad:
 
-            nodo_tomar = contador_nodos
+            nodo_tomar = contador
 
-            contador_nodos += 1
+            contador += 1
 
             nuevo_valor = (
-                valor_actual
+                valor
                 + valores[indice]
             )
 
@@ -128,119 +114,107 @@ def construir_arbol_mochila(pesos, valores, capacidad):
             )
 
             grafo.add_edge(
-                nodo_actual,
+                nodo,
                 nodo_tomar,
                 decision=f"Tomar {indice + 1}"
             )
 
-            cola.append(nodo_tomar)
+            cola.append(
+                nodo_tomar
+            )
 
     return grafo, raiz
 
 
-def obtener_orden_bfs(grafo, raiz):
+def obtener_orden_bfs(
+    grafo,
+    raiz
+):
     """
-    Obtiene el orden en el cual BFS visita
-    los nodos del árbol.
-
-    BFS utiliza una cola FIFO:
-
-        First In - First Out.
-
-    Esto hace que el árbol sea recorrido
-    nivel por nivel.
+    Obtiene el recorrido BFS.
     """
 
     orden = []
 
-    cola = deque()
-
-    cola.append(raiz)
+    cola = deque(
+        [raiz]
+    )
 
     while cola:
 
         nodo = cola.popleft()
 
-        orden.append(nodo)
+        orden.append(
+            nodo
+        )
 
-        for hijo in grafo.successors(nodo):
+        for hijo in grafo.successors(
+            nodo
+        ):
 
-            cola.append(hijo)
+            cola.append(
+                hijo
+            )
 
     return orden
 
 
-def obtener_orden_dfs(grafo, raiz):
+def obtener_orden_dfs(
+    grafo,
+    raiz
+):
     """
-    Obtiene el orden en el cual DFS visita
-    los nodos del árbol.
+    Obtiene el recorrido DFS reproduciendo
+    el comportamiento del algoritmo de Mochila.
 
-    DFS utiliza una pila LIFO:
-
-        Last In - First Out.
-
-    Esta función reproduce el mismo orden
-    utilizado en dfs_mochila().
-
-    En el algoritmo original se agrega:
-
-        1. No tomar.
-        2. Tomar.
-
-    Como la pila es LIFO, la opción
-    "Tomar" se procesa primero.
+    El hijo generado al final se procesa
+    primero debido al funcionamiento LIFO.
     """
 
     orden = []
 
-    pila = [raiz]
+    pila = [
+        raiz
+    ]
 
     while pila:
 
         nodo = pila.pop()
 
-        orden.append(nodo)
-
-        hijos = list(
-            grafo.successors(nodo)
+        orden.append(
+            nodo
         )
 
-        # Los hijos fueron creados en el orden:
-        #
-        # 1. No tomar.
-        # 2. Tomar.
-        #
-        # Se introducen en la pila en ese mismo
-        # orden para que "Tomar", al ser el último,
-        # salga primero.
+        for hijo in grafo.successors(
+            nodo
+        ):
 
-        for hijo in hijos:
-
-            pila.append(hijo)
+            pila.append(
+                hijo
+            )
 
     return orden
 
 
-def calcular_posiciones(grafo, raiz):
+def calcular_posiciones(
+    grafo,
+    raiz
+):
     """
-    Calcula las posiciones de los nodos
-    para dibujar el árbol jerárquicamente.
-
-    Los nodos del mismo nivel aparecen
-    aproximadamente a la misma altura.
+    Calcula posiciones jerárquicas.
     """
 
     posiciones = {}
 
     niveles = {}
 
-    cola = deque()
-
-    cola.append(
-        (
-            raiz,
-            0
-        )
+    cola = deque(
+        [
+            (
+                raiz,
+                0
+            )
+        ]
     )
 
     while cola:
@@ -249,13 +223,19 @@ def calcular_posiciones(grafo, raiz):
 
         if nivel not in niveles:
 
-            niveles[nivel] = []
+            niveles[
+                nivel
+            ] = []
 
-        niveles[nivel].append(
+        niveles[
+            nivel
+        ].append(
             nodo
         )
 
-        for hijo in grafo.successors(nodo):
+        for hijo in grafo.successors(
+            nodo
+        ):
 
             cola.append(
                 (
@@ -264,21 +244,26 @@ def calcular_posiciones(grafo, raiz):
                 )
             )
 
-    # Se asignan coordenadas a los nodos
-    # según el nivel al que pertenecen.
     for nivel, nodos in niveles.items():
 
-        cantidad = len(nodos)
+        cantidad = len(
+            nodos
+        )
 
-        for posicion, nodo in enumerate(nodos):
+        for posicion, nodo in enumerate(
+            nodos
+        ):
 
-            x = posicion - (
-                cantidad - 1
-            ) / 2
+            x = (
+                posicion
+                - (cantidad - 1) / 2
+            )
 
             y = -nivel
 
-            posiciones[nodo] = (
+            posiciones[
+                nodo
+            ] = (
                 x,
                 y
             )
@@ -286,121 +271,141 @@ def calcular_posiciones(grafo, raiz):
     return posiciones
 
 
-def obtener_mejor_valor(grafo):
-    """
-    Busca el mayor valor acumulado presente
-    dentro de todos los nodos del árbol.
-
-    Ese valor corresponde al valor óptimo
-    encontrado para la instancia.
-    """
-
-    mejor_valor = 0
-
-    for nodo in grafo.nodes:
-
-        valor = grafo.nodes[nodo]["valor"]
-
-        if valor > mejor_valor:
-
-            mejor_valor = valor
-
-    return mejor_valor
-
-
-def obtener_nodos_optimos(
+def obtener_mejor_valor(
     grafo,
-    mejor_valor
+    cantidad_objetos
 ):
     """
-    Obtiene todos los nodos cuyo valor
-    acumulado corresponde al valor óptimo.
-
-    Puede existir más de una combinación
-    diferente de objetos con el mismo
-    valor óptimo.
+    Obtiene el mayor valor entre estados
+    terminales del árbol.
     """
 
-    nodos_optimos = []
+    valores_finales = []
 
     for nodo in grafo.nodes:
 
-        datos = grafo.nodes[nodo]
+        datos = grafo.nodes[
+            nodo
+        ]
 
-        if datos["valor"] == mejor_valor:
+        if (
+            datos["indice"]
+            == cantidad_objetos
+        ):
 
-            nodos_optimos.append(nodo)
+            valores_finales.append(
+                datos["valor"]
+            )
 
-    return nodos_optimos
+    return max(
+        valores_finales
+    )
+
+
+def obtener_soluciones(
+    grafo,
+    mejor_valor,
+    cantidad_objetos
+):
+    """
+    Obtiene las hojas que representan
+    soluciones óptimas.
+    """
+
+    soluciones = []
+
+    for nodo in grafo.nodes:
+
+        datos = grafo.nodes[
+            nodo
+        ]
+
+        if (
+            datos["indice"] == cantidad_objetos
+            and datos["valor"] == mejor_valor
+        ):
+
+            soluciones.append(
+                nodo
+            )
+
+    return soluciones
 
 
 def crear_etiquetas(
     grafo,
     orden,
-    nodos_optimos
+    soluciones
 ):
     """
-    Crea las etiquetas mostradas dentro
-    de cada nodo.
-
-    Cada etiqueta incluye:
-
-        # número de visita
-        P = peso acumulado
-        V = valor acumulado
-
-    Los nodos con solución óptima incluyen
-    además el texto:
-
-        ÓPTIMO
+    Crea las etiquetas visuales.
     """
 
-    posiciones_orden = {}
-
-    for numero_visita, nodo in enumerate(
-        orden,
-        start=1
-    ):
-
-        posiciones_orden[nodo] = numero_visita
+    posiciones_orden = {
+        nodo: numero
+        for numero, nodo
+        in enumerate(
+            orden,
+            start=1
+        )
+    }
 
     etiquetas = {}
 
     for nodo in grafo.nodes:
 
-        datos = grafo.nodes[nodo]
-
-        visita = posiciones_orden[nodo]
+        datos = grafo.nodes[
+            nodo
+        ]
 
         etiqueta = (
-            f"#{visita}\n"
+            f"#{posiciones_orden[nodo]}\n"
             f"P={datos['peso']}\n"
             f"V={datos['valor']}"
         )
 
-        if nodo in nodos_optimos:
+        if nodo in soluciones:
 
-            etiqueta += "\nÓPTIMO"
+            etiqueta += (
+                "\nÓPTIMO"
+            )
 
-        etiquetas[nodo] = etiqueta
+        etiquetas[
+            nodo
+        ] = etiqueta
 
     return etiquetas
 
 
-def mostrar_arbol(
-    grafo,
-    raiz,
-    orden,
-    titulo
+def mostrar_arbol_comparado(
+    pesos,
+    valores,
+    capacidad
 ):
     """
-    Dibuja gráficamente el árbol
-    de decisiones de la mochila.
+    Genera una sola imagen con:
 
-    El número mostrado dentro de cada nodo
-    representa el orden en que el algoritmo
-    visitó ese estado.
+        BFS a la izquierda.
+        DFS a la derecha.
     """
+
+    grafo, raiz = (
+        construir_arbol_mochila(
+            pesos,
+            valores,
+            capacidad
+        )
+    )
+
+    orden_bfs = obtener_orden_bfs(
+        grafo,
+        raiz
+    )
+
+    orden_dfs = obtener_orden_dfs(
+        grafo,
+        raiz
+    )
 
     posiciones = calcular_posiciones(
         grafo,
@@ -408,18 +413,14 @@ def mostrar_arbol(
     )
 
     mejor_valor = obtener_mejor_valor(
-        grafo
+        grafo,
+        len(pesos)
     )
 
-    nodos_optimos = obtener_nodos_optimos(
+    soluciones = obtener_soluciones(
         grafo,
-        mejor_valor
-    )
-
-    etiquetas = crear_etiquetas(
-        grafo,
-        orden,
-        nodos_optimos
+        mejor_valor,
+        len(pesos)
     )
 
     etiquetas_aristas = (
@@ -429,154 +430,112 @@ def mostrar_arbol(
         )
     )
 
-    plt.figure(
-        figsize=(18, 10)
+    carpeta = Path(
+        "resultados/mochila/graficas/arboles"
     )
 
-    # Se dibujan primero todos los nodos.
-    nx.draw(
-        grafo,
-        posiciones,
-        labels=etiquetas,
-        with_labels=True,
-        node_size=2200,
-        font_size=8,
-        arrows=True
+    carpeta.mkdir(
+        parents=True,
+        exist_ok=True
     )
 
-    # Se muestran las decisiones:
-    #
-    # Tomar objeto
-    # No tomar objeto
-    nx.draw_networkx_edge_labels(
-        grafo,
-        posiciones,
-        edge_labels=etiquetas_aristas,
-        font_size=7
+    figura, (
+        ax_bfs,
+        ax_dfs
+    ) = plt.subplots(
+        1,
+        2,
+        figsize=(24, 10)
     )
 
-    # Se dibujan nuevamente los nodos óptimos
-    # con un tamaño mayor para destacarlos.
-    nx.draw_networkx_nodes(
-        grafo,
-        posiciones,
-        nodelist=nodos_optimos,
-        node_size=2800
-    )
+    configuraciones = [
+        (
+            ax_bfs,
+            orden_bfs,
+            "BFS - Nivel por nivel"
+        ),
+        (
+            ax_dfs,
+            orden_dfs,
+            "DFS - Profundidad"
+        )
+    ]
 
-    # Se vuelven a dibujar las etiquetas
-    # de los nodos óptimos.
-    etiquetas_optimas = {
-        nodo: etiquetas[nodo]
-        for nodo in nodos_optimos
-    }
-
-    nx.draw_networkx_labels(
-        grafo,
-        posiciones,
-        labels=etiquetas_optimas,
-        font_size=8
-    )
-
-    plt.title(
+    for (
+        eje,
+        orden,
         titulo
-    )
+    ) in configuraciones:
 
-    plt.axis("off")
+        etiquetas = crear_etiquetas(
+            grafo,
+            orden,
+            soluciones
+        )
+
+        nx.draw(
+            grafo,
+            posiciones,
+            ax=eje,
+            labels=etiquetas,
+            with_labels=True,
+            node_size=1900,
+            font_size=6,
+            arrows=True,
+            arrowsize=12
+        )
+
+        nx.draw_networkx_edge_labels(
+            grafo,
+            posiciones,
+            ax=eje,
+            edge_labels=etiquetas_aristas,
+            font_size=5
+        )
+
+        eje.set_title(
+            titulo,
+            fontsize=13,
+            fontweight="bold"
+        )
+
+        eje.axis(
+            "off"
+        )
+
+    figura.suptitle(
+        "Mochila 0/1 - Árbol de búsqueda BFS vs DFS\n"
+        f"Capacidad: {capacidad} | "
+        f"Nodos: {grafo.number_of_nodes()} | "
+        f"Valor óptimo: {mejor_valor}",
+        fontsize=15,
+        fontweight="bold"
+    )
 
     plt.tight_layout()
 
+    ruta = (
+        carpeta
+        / "arbol_mochila.png"
+    )
+
+    plt.savefig(
+        ruta,
+        dpi=150,
+        bbox_inches="tight"
+    )
+
     plt.show()
 
-
-def mostrar_datos_problema(
-    pesos,
-    valores,
-    capacidad
-):
-    """
-    Muestra en consola los datos utilizados
-    para construir el árbol.
-    """
-
-    print()
-    print("PROBLEMA DE LA MOCHILA")
-
-    print(
-        "Capacidad:",
-        capacidad
-    )
-
     print()
 
-    print("Objetos:")
-
-    for i in range(len(pesos)):
-
-        print(
-            f"Objeto {i + 1}: "
-            f"peso = {pesos[i]}, "
-            f"valor = {valores[i]}"
-        )
-
-
-def mostrar_resultado_arbol(
-    grafo,
-    mejor_valor
-):
-    """
-    Muestra en consola las combinaciones
-    correspondientes al valor óptimo.
-    """
-
-    print()
     print(
-        "Valor óptimo:",
-        mejor_valor
+        "Árbol guardado en:",
+        ruta
     )
-
-    print(
-        "Soluciones óptimas encontradas:"
-    )
-
-    for nodo in grafo.nodes:
-
-        datos = grafo.nodes[nodo]
-
-        if datos["valor"] == mejor_valor:
-
-            seleccionados = datos[
-                "seleccionados"
-            ]
-
-            # Solo interesa mostrar estados
-            # que contengan realmente objetos.
-            if seleccionados:
-
-                objetos = [
-                    indice + 1
-                    for indice
-                    in seleccionados
-                ]
-
-                print(
-                    "Objetos:",
-                    objetos,
-                    "| Peso:",
-                    datos["peso"],
-                    "| Valor:",
-                    datos["valor"]
-                )
 
 
 if __name__ == "__main__":
-
-    # Instancia pequeña utilizada únicamente
-    # para visualizar claramente el árbol.
-    #
-    # No se utilizan las mochilas grandes
-    # de las 100 simulaciones porque sus árboles
-    # contienen miles de nodos y serían ilegibles.
 
     pesos = [
         2,
@@ -594,82 +553,8 @@ if __name__ == "__main__":
 
     capacidad = 8
 
-    mostrar_datos_problema(
+    mostrar_arbol_comparado(
         pesos,
         valores,
         capacidad
-    )
-
-    # Se construye un único árbol.
-    #
-    # BFS y DFS utilizan exactamente el mismo
-    # espacio de estados.
-    grafo, raiz = construir_arbol_mochila(
-        pesos,
-        valores,
-        capacidad
-    )
-
-    # Se calcula el orden de recorrido BFS.
-    orden_bfs = obtener_orden_bfs(
-        grafo,
-        raiz
-    )
-
-    # Se calcula el orden de recorrido DFS.
-    orden_dfs = obtener_orden_dfs(
-        grafo,
-        raiz
-    )
-
-    mejor_valor = obtener_mejor_valor(
-        grafo
-    )
-
-    mostrar_resultado_arbol(
-        grafo,
-        mejor_valor
-    )
-
-    print()
-
-    print(
-        "Cantidad total de nodos:",
-        grafo.number_of_nodes()
-    )
-
-    print()
-
-    print(
-        "Orden de recorrido BFS:"
-    )
-
-    print(
-        orden_bfs
-    )
-
-    print()
-
-    print(
-        "Orden de recorrido DFS:"
-    )
-
-    print(
-        orden_dfs
-    )
-
-    # Árbol con numeración según BFS.
-    mostrar_arbol(
-        grafo,
-        raiz,
-        orden_bfs,
-        "Árbol del problema de la mochila - Recorrido BFS"
-    )
-
-    # Árbol con numeración según DFS.
-    mostrar_arbol(
-        grafo,
-        raiz,
-        orden_dfs,
-        "Árbol del problema de la mochila - Recorrido DFS"
     )
