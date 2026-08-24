@@ -1,5 +1,5 @@
 # Informe Final
-## Análisis de Desempeño de BFS vs DFS en Problemas Combinatorios
+## Análisis de Desempeño de BFS vs DFS 
 
 ---
 
