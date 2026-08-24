@@ -1,137 +1,167 @@
-# N-Reinas: comparación BFS vs DFS
+# N-Reinas: Comparación BFS vs DFS
 
-Implementación y análisis experimental de **Breadth-First Search (BFS)** y **Depth-First Search (DFS)** aplicados al problema de las N-Reinas.
+Implementación del problema de las N-Reinas utilizando búsqueda en profundidad (DFS) y búsqueda en anchura (BFS), con análisis experimental de desempeño.
 
-## Objetivo
+## Estructura
 
-Comparar principalmente:
-
-- Tiempo de ejecución.
-- Memoria pico utilizada.
-
-También se registra la cantidad de nodos explorados como métrica auxiliar.
-
-## Representación del estado
-
-El tablero se representa mediante una lista donde el índice corresponde a la columna y el valor almacenado corresponde a la fila en la que se ubica la reina.
-
-Ejemplo para N=4:
-
-```python
-tablero = [1, 3, 0, 2]
 ```
-
-Esto representa una reina por columna y una solución válida del problema.
-
-## Archivos
-
-```text
 Nreinas/
-├── n_reinas.py
-├── bfs.py
-├── dfs.py
-├── medicion.py
-├── simulaciones.py
-├── analisis_resultados.py
-├── graficas.py
-├── arboles.py
-├── visualizacion.py
-├── comparar_maquinas.py
-├── main.py
+├── main.py                 # Punto de entrada con menú interactivo
+├── n_reinas.py             # Funciones comunes (validación, representación)
+├── bfs.py                  # Implementación BFS
+├── dfs.py                  # Implementación DFS
+├── visualizacion.py        # Visualización del tablero con matplotlib
+├── medicion.py             # Medición de tiempo y memoria
+├── simulaciones.py         # 100 simulaciones por cada N
+├── graficas.py             # Generación de gráficas comparativas
+├── analisis_resultados.py  # Análisis estadístico y Big-O
+│
+├── resultados/
+│   └── datos/
+│       ├── resultados_nreinas.csv
+│       ├── resumen_nreinas.csv
+│       └── comparacion_nreinas.csv
+│
 └── README.md
 ```
 
-## BFS
+## Representación del Estado
 
-`bfs.py` utiliza una cola FIFO (`deque`). Los estados parciales se exploran por niveles. El algoritmo se detiene cuando encuentra la primera solución completa.
+El tablero se representa como una lista donde el índice es la columna y el valor es la fila:
 
-## DFS
-
-`dfs.py` utiliza una pila LIFO. El algoritmo profundiza una rama válida antes de regresar a otras alternativas y se detiene cuando encuentra la primera solución completa.
-
-## Medición
-
-`medicion.py` utiliza:
-
-- `time.perf_counter()` para medir tiempo.
-- `tracemalloc` para registrar memoria pico.
-- Un contador explícito para los nodos procesados.
-
-## Diseño experimental
-
-Se evaluaron valores de N entre 4 y 13.
-
-| N | Repeticiones por algoritmo |
-|---:|---:|
-| 4 a 10 | 100 |
-| 11 | 50 |
-| 12 | 20 |
-| 13 | 10 |
-
-La reducción de repeticiones para N grandes se debe al fuerte crecimiento del costo de BFS.
-
-Para un mismo valor de N, las repeticiones ejecutan el mismo problema determinista. Por tanto, sirven principalmente para observar la variabilidad de las mediciones de tiempo y memoria y no representan instancias aleatorias diferentes.
-
-## Resultados actuales
-
-Los resultados agregados se encuentran en:
-
-```text
-resultados/nreinas/datos/
-├── resultados.csv
-├── resumen.csv
-├── comparacion.csv
-└── info_maquina.json
+```python
+tablero = [1, 3, 0, 2]  # 4 reinas
 ```
 
-Los datos guardados muestran un crecimiento muy marcado de BFS a medida que aumenta N. En N=13, el promedio almacenado es aproximadamente:
+Significa:
+- Columna 0: reina en fila 1
+- Columna 1: reina en fila 3
+- Columna 2: reina en fila 0
+- Columna 3: reina en fila 2
 
-- BFS: 112 s, 234.770 KB y 4.601.179 nodos.
-- DFS: 0,0012 s, 1,72 KB y 112 nodos.
+Visualmente:
+```
+. Q . .
+. . . Q
+Q . . .
+. . Q .
+```
 
-Estos valores corresponden a las implementaciones y al equipo registrados en los archivos de resultados; no deben interpretarse como tiempos universales de BFS y DFS.
+## Algoritmos
 
-## Gráficas principales
+### DFS (Depth-First Search)
+- Utiliza una **pila** (LIFO)
+- Explora en profundidad hasta encontrar solución o callejón sin salida
+- Complejidad espacial: **O(N)** (solo almacena el camino actual)
+- Encuentra la primera solución rápidamente
 
-`graficas.py` genera cuatro visualizaciones principales:
+### BFS (Breadth-First Search)
+- Utiliza una **cola** (FIFO)
+- Explora nivel por nivel (todas las posiciones de una columna antes de pasar a la siguiente)
+- Complejidad espacial: **O(N!)** en peor caso (almacena nivel completo)
+- Garantiza encontrar la solución con menor profundidad
 
-1. Tiempo promedio BFS vs DFS por N.
-2. Memoria pico promedio BFS vs DFS por N.
-3. Nodos explorados promedio BFS vs DFS por N.
-4. Ratio BFS/DFS para tiempo, memoria y nodos.
+## Métricas Medidas
 
-Se utiliza escala logarítmica porque, para N grandes, las diferencias abarcan varios órdenes de magnitud.
+1. **Tiempo de ejecución** - `time.perf_counter()`
+2. **Memoria pico** - `tracemalloc` (en KB)
+3. **Nodos explorados** - Contador de estados visitados
+4. **Solución encontrada** - Booleano
 
-## Árbol de búsqueda
+## Experimento
 
-`arboles.py` permite visualizar un tamaño pequeño, recomendado N=4, para observar el orden de recorrido de BFS y DFS sobre el mismo árbol de estados factibles.
+- **N valores**: 4, 5, 6, 7, 8, 9, 10
+- **Simulaciones por N**: 100
+- **Total**: 1,400 ejecuciones (700 BFS + 700 DFS)
+- **Mismo problema**: BFS y DFS resuelven exactamente la misma instancia
 
-## Ejecución
+## Uso
 
-Desde la raíz del repositorio:
+### Menú interactivo
+```bash
+python main.py
+```
+
+### Experimento automático completo
+```bash
+python main.py --experimentos
+```
+
+### Opciones del menú
+1. Ejecutar DFS una vez
+2. Ejecutar BFS una vez
+3. Comparar ambos (con visualización)
+4. Ejecutar 100 simulaciones
+5. Generar gráficas desde CSV guardado
+6. Experimento completo (simulaciones + gráficas + análisis)
+7. Análisis estadístico detallado
+
+## Resultados Generados
+
+### `resultados_nreinas.csv`
+Datos brutos de cada simulación:
+```
+simulacion, n, algoritmo, tiempo, memoria_kb, nodos, solucion_encontrada
+```
+
+### `resumen_nreinas.csv`
+Promedios por N y algoritmo:
+```
+n, algoritmo, tiempo_promedio, memoria_promedio, nodos_promedio
+```
+
+### `comparacion_nreinas.csv`
+Diferencias porcentuales BFS vs DFS:
+```
+n, diferencia_tiempo_porcentaje, diferencia_memoria_porcentaje, diferencia_nodos_porcentaje
+```
+
+## Gráficas Generadas
+
+1. **Tiempo vs N** (escala logarítmica)
+2. **Memoria vs N** (escala logarítmica)
+3. **Nodos explorados vs N** (escala logarítmica)
+4. **Boxplot tiempo** - Distribución por N y algoritmo
+5. **Boxplot memoria** - Distribución por N y algoritmo
+6. **Boxplot nodos** - Distribución por N y algoritmo
+
+## Análisis de Complejidad (Big-O)
+
+| Aspecto | DFS | BFS |
+|---------|-----|-----|
+| Tiempo peor caso | O(N!) | O(N!) |
+| Espacio peor caso | O(N) | O(N!) |
+| Espacio típico | O(N) | Exponencial |
+| Primera solución | Rápida | Lenta (explora nivel completo) |
+| Optimalidad (profundidad) | No garantizada | Garantizada (mínima profundidad) |
+
+## Requisitos
 
 ```bash
-python Nreinas/main.py
+pip install matplotlib pandas numpy networkx
 ```
 
-Para generar únicamente el análisis a partir del CSV existente:
+## Ejemplo de Salida
 
-```bash
-python Nreinas/analisis_resultados.py
+```
+===================================
+       N-REINAS: BFS vs DFS
+===================================
+
+1. Ejecutar DFS
+2. Ejecutar BFS
+3. Mostrar tablero
+4. Ejecutar 100 simulaciones
+5. Generar gráficas
+6. Ejecutar experimento completo
+7. Salir
+
+Seleccione una opción: 3
+Ingrese N: 8
+
+DFS: [4, 6, 1, 5, 2, 0, 3, 7] (0.000123s, 145 nodos)
+BFS: [0, 4, 7, 5, 2, 6, 1, 3] (0.000456s, 2891 nodos)
 ```
 
-Para regenerar las gráficas desde los resultados existentes:
+Se abren dos ventanas con los tableros visuales y una comparación lado a lado.
 
-```bash
-python Nreinas/graficas.py
-```
-
-Para visualizar el árbol de N=4:
-
-```bash
-python Nreinas/arboles.py 4
-```
-
-## Interpretación
-
-En este problema el objetivo es encontrar una primera configuración válida completa. BFS debe avanzar nivel por nivel y conserva una frontera amplia, mientras DFS puede alcanzar rápidamente una solución profundizando una rama válida. Esto explica el comportamiento experimental observado, donde DFS utiliza muchos menos nodos, tiempo y memoria para los tamaños evaluados.
