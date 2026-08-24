@@ -121,12 +121,14 @@ Considerando el árbol de decisiones de la Mochila 0/1, cada objeto puede produc
 | Aspecto | BFS | DFS |
 |---------|-----|-----|
 | **Tiempo peor caso** | O(2^N) | O(2^N) |
-| **Estados potenciales** | Exponenciales | Exponenciales |
-| **Frontera almacenada** | Puede crecer exponencialmente | Crece principalmente con la profundidad |
+| **Espacio de frontera** | O(2^N) | O(N) |
+| **Profundidad máxima** | O(N) | O(N) |
 | **Orden de recorrido** | Nivel por nivel | Rama por rama |
 | **Ventaja observada** | Ninguna en esta implementación | Menor memoria y menor tiempo en tamaños grandes |
 
-En términos del número de estados pendientes, DFS tiene una ventaja espacial porque no necesita conservar simultáneamente un nivel completo del árbol. La implementación utilizada almacena información adicional dentro de cada estado, por lo que el consumo real también depende de la representación concreta de los nodos en Python.
+Ambos algoritmos realizan una búsqueda exhaustiva sobre el mismo árbol factible y, por tanto, presentan la misma complejidad temporal **O(2^N)** en el peor caso.
+
+Las expresiones espaciales anteriores consideran cada estado como una unidad. En la implementación concreta, cada estado almacena además la lista de objetos seleccionados, por lo que el consumo real de memoria incluye el costo adicional de almacenar y copiar dicha lista.
 
 ---
 
@@ -177,42 +179,3 @@ Ubicación: `resultados/mochila/datos/`
 | `comparacion.csv` | Comparación directa y diferencias porcentuales entre BFS y DFS |
 
 Los datos de cada instancia incluyen pesos, valores, capacidad, tiempo, memoria pico, nodos explorados y valor óptimo, lo que permite reproducir y verificar el análisis experimental.
-
----
-
-## 9. Código Fuente
-
-Ubicación: `mochila/`
-
-```text
-mochila/
-├── bfs_dfs_mochila.py      # Implementación BFS y DFS
-├── medicion.py              # Medición de tiempo y memoria
-├── simulaciones.py          # Generación y ejecución de las 100 instancias
-├── analisis_resultados.py   # Estadísticas y comparación BFS vs DFS
-├── graficas.py              # Generación de gráficas comparativas
-└── arboles.py               # Visualización del árbol BFS vs DFS
-```
-
-### Ejecución
-
-Desde la raíz del repositorio:
-
-```bash
-python mochila/simulaciones.py
-python mochila/analisis_resultados.py
-python mochila/graficas.py
-python mochila/arboles.py
-```
-
----
-
-## 10. Conclusiones
-
-Los resultados experimentales muestran que BFS y DFS son capaces de resolver correctamente las mismas instancias de Mochila 0/1 y encontrar el mismo valor óptimo. Además, debido a la naturaleza exhaustiva de las implementaciones utilizadas, ambos exploran la misma cantidad de nodos.
-
-La principal diferencia aparece en la forma de administrar la frontera de búsqueda. BFS conserva una gran cantidad de estados pertenecientes a los niveles actuales del árbol, lo que produce un crecimiento considerable de memoria a medida que aumenta el número de objetos. DFS profundiza una rama y mantiene una frontera mucho menor, por lo que su consumo de memoria permanece reducido en comparación.
-
-En tiempo de ejecución, las diferencias son pequeñas para las instancias de menor tamaño, pero aumentan cuando crece el árbol de decisiones. Para 15 objetos, BFS presentó aproximadamente 73.63 % más tiempo promedio que DFS.
-
-Por tanto, para la implementación experimental utilizada en este proyecto, **DFS resulta más conveniente que BFS para resolver exhaustivamente la Mochila 0/1**, especialmente cuando se considera el consumo de memoria. Sin embargo, esta conclusión corresponde al diseño concreto del experimento y no implica que DFS sea universalmente superior en todos los problemas de búsqueda.
