@@ -255,7 +255,7 @@ La principal causa no es una reducción del espacio explorado, sino la forma en 
 
 ---
 
-## 5. Análisis del Problema Puzzle 3x3
+## 5. Análisis del Problema de Puzzle 3x3
 
 ### 5.1 Descripción
 
@@ -290,7 +290,17 @@ DFS, en cambio, depende mucho más del orden en que se generan los movimientos y
 
 Además, cuando todos los movimientos tienen el mismo costo, BFS garantiza encontrar una solución de profundidad mínima, mientras DFS no proporciona esta garantía.
 
-### 5.4 Resultados
+### 5.4 Árbol parcial de búsqueda
+
+Para visualizar la diferencia entre BFS y DFS se utiliza una representación parcial común del espacio de estados del Puzzle 3x3.
+
+![Árbol parcial de búsqueda Puzzle 3x3](../resultados/puzzle/graficas/arboles/arbol_puzzle.png)
+
+La visualización muestra el orden de visita de ambos algoritmos sobre el mismo conjunto de estados. BFS recorre los nodos por niveles, mientras DFS profundiza una rama antes de regresar a explorar las demás alternativas.
+
+Este árbol se utiliza con fines comparativos y pedagógicos. No representa la totalidad del espacio de estados ni todos los nodos que pueden recorrerse durante una simulación completa.
+
+### 5.5 Resultados
 
 Los resultados de las ejecuciones que terminaron normalmente fueron:
 
@@ -301,7 +311,7 @@ Los resultados de las ejecuciones que terminaron normalmente fueron:
 
 Las otras 49 ejecuciones de DFS alcanzaron el límite de 50.000 nodos y se identifican por separado.
 
-### 5.5 Tiempo de ejecución
+### 5.6 Tiempo de ejecución
 
 ![Tiempo de ejecución Puzzle 3x3](../resultados/puzzle/graficas/comparacion/01_tiempo_global.png)
 
@@ -313,7 +323,7 @@ Para interpretar de forma justa las búsquedas que sí finalizaron, se utiliza t
 
 Entre las ejecuciones exitosas, BFS tuvo un tiempo promedio de aproximadamente **0,00069 segundos**, mientras DFS alcanzó aproximadamente **0,063 segundos**.
 
-### 5.6 Consumo de memoria
+### 5.7 Consumo de memoria
 
 ![Memoria Puzzle 3x3](../resultados/puzzle/graficas/comparacion/02_memoria_global_log.png)
 
@@ -327,7 +337,7 @@ BFS utilizó aproximadamente **16,82 KB** en promedio, mientras DFS utilizó apr
 
 Aunque DFS suele asociarse teóricamente con una frontera menor, los resultados experimentales dependen de la implementación completa. En este caso, DFS recorrió porciones mucho mayores del espacio de estados y mantuvo estructuras de visitados y padres, lo que produjo un consumo empírico superior.
 
-### 5.7 Nodos explorados
+### 5.8 Nodos explorados
 
 ![Nodos explorados Puzzle 3x3](../resultados/puzzle/graficas/comparacion/03_nodos.png)
 
@@ -335,7 +345,7 @@ BFS exploró aproximadamente **80,25 nodos en promedio**, mientras DFS exploró 
 
 La diferencia muestra que BFS encontró las soluciones de estas instancias recorriendo una cantidad mucho menor de estados.
 
-### 5.8 Ejecuciones que alcanzaron el límite
+### 5.9 Ejecuciones que alcanzaron el límite
 
 | Algoritmo | Total | Exitosas | Límite alcanzado | Porcentaje |
 |---|---:|---:|---:|---:|
@@ -348,7 +358,7 @@ BFS completó las 100 simulaciones sin alcanzar el límite experimental. DFS com
 
 Este resultado evidencia una mayor variabilidad de DFS en las instancias utilizadas.
 
-### 5.9 Conclusión del Puzzle 3x3
+### 5.10 Conclusión del Puzzle 3x3
 
 Para las instancias utilizadas en este experimento, **BFS presentó el mejor desempeño general**.
 
@@ -366,7 +376,7 @@ Los experimentos realizados permiten comparar el comportamiento de BFS y DFS en 
 |---|---|---|---|
 | Estrategia más favorable | DFS | DFS | BFS |
 | Ventaja principal | Menor tiempo, memoria y nodos | Menor memoria y mejor tiempo en tamaños grandes | Menor tiempo, memoria y nodos |
-| BFS explora más nodos | Sí | No | Sí, frente a DFS no; en realidad explora menos |
+| BFS explora más nodos | Sí | No | No |
 | Influencia de la profundidad | Alta | Media | Alta |
 | Criterio decisivo | Primera solución completa | Recorrido exhaustivo | Solución cercana a la meta |
 
