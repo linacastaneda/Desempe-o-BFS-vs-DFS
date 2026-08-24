@@ -7,6 +7,10 @@
 - Jorge García
 - Brayan Hernandez
 
+## Repositorio
+
+https://github.com/linacastaneda/Desempe-o-BFS-vs-DFS
+
 ---
 
 ## 1. Introducción
