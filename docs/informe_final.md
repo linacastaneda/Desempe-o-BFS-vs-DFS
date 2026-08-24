@@ -5,7 +5,7 @@
 
 ## 1. Introducción
 
-La búsqueda en anchura (**BFS**) y la búsqueda en profundidad (**DFS**) son estrategias clásicas para recorrer espacios de estados. Aunque ambas permiten explorar soluciones en problemas combinatorios, su comportamiento puede cambiar de manera importante según la estructura del problema, la profundidad de las soluciones y la cantidad de estados que deben mantenerse en memoria.
+La búsqueda en anchura (**BFS**) y la búsqueda en profundidad (**DFS**). Aunque ambas permiten explorar soluciones en problemas combinatorios, su comportamiento puede cambiar de manera importante según la estructura del problema.
 
 En este proyecto se compara experimentalmente el desempeño de BFS y DFS en tres problemas:
 
@@ -13,27 +13,9 @@ En este proyecto se compara experimentalmente el desempeño de BFS y DFS en tres
 - N-Reinas.
 - Mochila 0/1.
 
-En la versión actual de este informe se consolidan los resultados correspondientes a **N-Reinas** y **Mochila 0/1**. La sección de Puzzle 3x3 se incorporará posteriormente con la misma metodología de análisis.
-
 ---
 
-## 2. Objetivos
-
-### 2.1 Objetivo general
-
-Comparar experimentalmente el desempeño de BFS y DFS en distintos problemas combinatorios, evaluando principalmente el tiempo de ejecución y el consumo de memoria.
-
-### 2.2 Objetivos específicos
-
-- Implementar BFS y DFS en problemas con estructuras de espacio de estados diferentes.
-- Medir tiempo de ejecución, memoria pico y nodos explorados.
-- Analizar el comportamiento de ambos algoritmos mediante tablas, gráficas y árboles de búsqueda.
-- Relacionar los resultados experimentales con la estructura particular de cada problema.
-- Determinar en qué condiciones una estrategia resulta más conveniente que la otra.
-
----
-
-## 3. Metodología General
+## 2. Metodología General
 
 Las implementaciones fueron desarrolladas en Python. Para la medición experimental se utilizaron principalmente:
 
@@ -43,13 +25,13 @@ Las implementaciones fueron desarrolladas en Python. Para la medición experimen
 
 Dentro de cada problema, BFS y DFS se ejecutan bajo las mismas condiciones de entrada, de modo que la comparación entre ambos sea directa.
 
-La complejidad teórica se interpreta de acuerdo con la estructura de cada espacio de búsqueda. Por esta razón, N-Reinas y Mochila 0/1 no presentan la misma expresión asintótica aunque utilicen los mismos algoritmos de recorrido.
+La complejidad teórica se interpreta de acuerdo con la estructura de cada espacio de búsqueda.
 
 ---
 
-## 4. Análisis del Problema de N-Reinas
+## 3. Análisis del Problema de N-Reinas
 
-### 4.1 Descripción del problema
+### 3.1 Descripción del problema
 
 El problema de N-Reinas consiste en ubicar N reinas sobre un tablero de tamaño N × N de manera que ninguna pueda atacar a otra. Esto implica evitar coincidencias en filas, columnas y diagonales.
 
@@ -191,9 +173,9 @@ En Mochila 0/1, cada objeto puede generar hasta dos decisiones, por lo que el á
 | **Profundidad máxima** | O(N) | O(N) |
 | **Orden de recorrido** | Nivel por nivel | Rama por rama |
 
-Ambos algoritmos realizan una búsqueda exhaustiva sobre el mismo árbol factible y, por tanto, presentan la misma complejidad temporal asintótica en el peor caso.
+Ambos algoritmos realizan una búsqueda exhaustiva sobre el mismo árbol factible y, por tanto, presentan la misma complejidad  en el peor caso.
 
-La principal diferencia aparece en el espacio utilizado por la frontera. Estas expresiones consideran cada estado como una unidad. En la implementación concreta, cada estado almacena además la lista de objetos seleccionados, por lo que el consumo real de memoria incluye el costo adicional de almacenar y copiar dicha lista.
+En la implementación concreta, cada estado almacena además la lista de objetos seleccionados, por lo que el consumo real de memoria incluye el costo adicional de almacenar y copiar dicha lista.
 
 ### 5.4 Árbol de búsqueda
 
@@ -257,7 +239,7 @@ La gráfica de memoria confirma que el crecimiento de BFS es mucho más pronunci
 
 ### 5.9 Conclusión particular de Mochila 0/1
 
-En Mochila 0/1, BFS y DFS encuentran el mismo valor óptimo y exploran la misma cantidad de nodos porque ambos realizan una búsqueda exhaustiva sobre el mismo árbol factible.
+En Mochila 0/1, BFS y DFS encuentran el mismo valor óptimo y exploran la misma cantidad de nodos porque ambos realizan una búsqueda exhaustiva sobre el mismo árbol.
 
 Sin embargo, DFS presenta una ventaja clara en consumo de memoria y también un mejor desempeño temporal en las instancias más grandes.
 
@@ -267,7 +249,7 @@ La principal causa no es una reducción del espacio explorado, sino la forma en 
 
 ## 6. Comparación Parcial entre N-Reinas y Mochila 0/1
 
-Los resultados obtenidos hasta el momento permiten observar que DFS resulta más conveniente en ambos problemas, pero **por razones diferentes**.
+Los resultados obtenidos permiten observar que DFS resulta más conveniente en ambos problemas, pero por razones diferentes.
 
 En N-Reinas, DFS no solo utiliza menos memoria: también explora considerablemente menos nodos antes de encontrar la primera solución. El criterio de terminación favorece la exploración en profundidad, ya que no es necesario recorrer todos los estados de niveles anteriores para obtener una solución completa.
 
