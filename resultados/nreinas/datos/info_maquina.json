@@ -1,0 +1,12 @@
+{
+  "hostname": "DESKTOP-PCTS8TB",
+  "sistema": "Windows",
+  "version_sistema": "10.0.26200",
+  "arquitectura": "AMD64",
+  "procesador": "AMD Ryzen 7 7445HS w/ Radeon 740M Graphics",
+  "python_version": "3.14.7",
+  "cpu_count": 12,
+  "ram_total_gb": 15.26,
+  "cpu_freq_mhz": 2497.0,
+  "cpu_freq_max_mhz": 3201.0
+}
