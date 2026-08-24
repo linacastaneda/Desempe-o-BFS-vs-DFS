@@ -4,11 +4,13 @@
 
 ## 1. Resumen Ejecutivo
 
-Este documento presenta el análisis experimental comparativo entre **Búsqueda en Anchura (BFS)** y **Búsqueda en Profundidad (DFS)** aplicado al problema del **Puzzle 8**.
+Este documento presenta el análisis experimental comparativo entre **Búsqueda en Anchura (BFS)** y **Búsqueda en Profundidad (DFS)** aplicado al problema del **Puzzle 3x3**.
 
 Se realizaron **100 simulaciones para cada algoritmo**, midiendo tiempo de ejecución, memoria utilizada, nodos explorados, movimientos y profundidad.
 
-**Conclusión principal:** BFS presentó un comportamiento mucho más estable y eficiente en este experimento. Las 100 ejecuciones de BFS terminaron correctamente, mientras que DFS alcanzó el límite establecido en **49 de 100 ejecuciones**.
+Los estados iniciales se generaron a partir del estado objetivo mediante **6 movimientos válidos aleatorios**, evitando la reversión inmediata del último movimiento. Este procedimiento garantiza que las instancias sean solucionables, pero no implica necesariamente que la distancia óptima a la solución sea exactamente de 6 movimientos.
+
+**Conclusión principal:** BFS presentó un comportamiento mucho más estable y eficiente en este experimento. Las 100 ejecuciones de BFS terminaron correctamente, mientras que DFS alcanzó el límite experimental en **49 de 100 ejecuciones**.
 
 ---
 
@@ -16,13 +18,16 @@ Se realizaron **100 simulaciones para cada algoritmo**, midiendo tiempo de ejecu
 
 | Parámetro | Valor |
 |---|---|
-| **Problema** | Puzzle 8 |
+| **Problema** | Puzzle 3x3 |
 | **Algoritmos** | BFS y DFS |
 | **Simulaciones** | 100 por algoritmo |
 | **Métricas** | Tiempo, memoria, nodos, movimientos y profundidad |
-| **Límite de DFS** | 50.000 nodos |
+| **Generación de estados** | 6 movimientos válidos aleatorios desde la meta |
+| **Límite experimental por ejecución** | 50.000 nodos |
 | **Algoritmo BFS exitoso** | 100% |
 | **Algoritmo DFS exitoso** | 51% |
+
+El mismo estado inicial se utiliza para BFS y DFS en cada simulación, lo que permite realizar una comparación directa entre ambos algoritmos.
 
 ---
 
@@ -50,17 +55,9 @@ Se realizaron **100 simulaciones para cada algoritmo**, midiendo tiempo de ejecu
 
 ### BFS
 
-BFS obtuvo **100 ejecuciones exitosas de 100**, sin alcanzar el límite de nodos.
+BFS obtuvo **100 ejecuciones exitosas de 100**, sin alcanzar el límite experimental.
 
-Su tiempo promedio fue de aproximadamente:
-
-**0.00069 segundos**
-
-y utilizó en promedio:
-
-**16.82 KB de memoria.**
-
-Además, exploró aproximadamente **80 nodos por ejecución**.
+Su tiempo promedio fue de aproximadamente **0.00069 segundos**, utilizó en promedio **16.82 KB de memoria** y exploró aproximadamente **80 nodos por ejecución**.
 
 ### DFS
 
@@ -70,9 +67,9 @@ Las otras **49 ejecuciones alcanzaron el límite de 50.000 nodos**, equivalente 
 
 En las ejecuciones exitosas, DFS presentó:
 
-- Tiempo promedio: **0.063 segundos**
-- Memoria promedio: **2492.67 KB**
-- Nodos promedio: **6979.39**
+- Tiempo promedio: **0.063 segundos**.
+- Memoria promedio: **2492.67 KB**.
+- Nodos promedio: **6979.39**.
 
 Esto muestra que DFS puede necesitar explorar una cantidad mucho mayor de estados antes de encontrar una solución.
 
@@ -85,7 +82,7 @@ Esto muestra que DFS puede necesitar explorar una cantidad mucho mayor de estado
 | **BFS** | 100 | 100 | 0 | 0% |
 | **DFS** | 100 | 51 | 49 | 49% |
 
-**Observación principal:** BFS completó todas las simulaciones, mientras que DFS no pudo completar el 49% debido al límite de **50.000 nodos**.
+**Observación principal:** BFS completó todas las simulaciones, mientras que DFS no pudo completar el 49% dentro del límite experimental de **50.000 nodos por ejecución**.
 
 ---
 
@@ -96,11 +93,11 @@ Los resultados experimentales muestran que, para las configuraciones de Puzzle e
 - **BFS fue más rápido** en promedio.
 - **BFS utilizó considerablemente menos memoria.**
 - BFS completó **100% de las simulaciones**.
-- DFS solo completó **51% de las simulaciones**.
+- DFS completó **51% de las simulaciones**.
 - DFS alcanzó el límite de **50.000 nodos en 49 casos**.
-- Cuando DFS alcanza el límite, aumenta considerablemente el tiempo, la memoria y la cantidad de nodos explorados.
+- Cuando DFS alcanza el límite, aumentan considerablemente el tiempo, la memoria y la cantidad de nodos explorados.
 
-Por lo tanto, **BFS presentó el mejor desempeño general en este experimento de Puzzle**, especialmente en estabilidad y capacidad para completar las búsquedas.
+Por lo tanto, **BFS presentó el mejor desempeño general en este experimento de Puzzle 3x3**, especialmente en estabilidad y capacidad para completar las búsquedas.
 
 ---
 
