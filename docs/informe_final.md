@@ -298,3 +298,333 @@ La versión final del informe incorporará el análisis de **Puzzle 3x3**, inclu
 - conclusión particular del problema.
 
 Después de incorporar Puzzle 3x3, se actualizará la sección de conclusiones generales para integrar los resultados de los tres problemas.
+
+## 9. Análisis del Problema Puzzle 3x3
+
+### 9.1 Descripción
+
+El Puzzle 3x3 consiste en organizar las fichas del 1 al 8 y un espacio vacío (`0`) hasta alcanzar una configuración objetivo.
+
+En este experimento se compararon los algoritmos BFS (Breadth-First Search) y DFS (Depth-First Search), utilizando las mismas configuraciones iniciales para ambos algoritmos.
+
+Las principales métricas analizadas fueron:
+
+- Tiempo de ejecución.
+- Consumo de memoria.
+- Nodos explorados.
+- Cantidad de movimientos.
+- Profundidad de la solución.
+- Ejecuciones que alcanzaron el límite experimental.
+
+El objetivo es determinar cuál de las dos estrategias presenta un mejor comportamiento para las instancias utilizadas del Puzzle 3x3.
+
+---
+
+### 9.2 Configuración experimental
+
+Se realizaron un total de 100 simulaciones para cada algoritmo.
+
+Las configuraciones utilizadas tenían soluciones de profundidad 6 movimientos. Para evitar que algunas ejecuciones de DFS se prolongaran excesivamente, se estableció un límite máximo de 50.000 nodos explorados.
+
+Este límite permite controlar las ejecuciones que presentan un comportamiento desfavorable y, al mismo tiempo, identificar qué tan estable es cada algoritmo.
+
+Los resultados fueron:
+
+| Algoritmo | Total de ejecuciones |
+|---|---:|
+| BFS | 100 |
+| DFS | 100 |
+
+BFS completó las 100 ejecuciones sin alcanzar el límite, mientras que DFS alcanzó el límite en 49 de las 100 simulaciones.
+
+---
+
+### 9.3 Complejidad y comportamiento
+
+BFS explora el espacio de búsqueda nivel por nivel, mientras que DFS explora una rama en profundidad antes de regresar para continuar con otras alternativas.
+
+En el Puzzle 3x3 esta diferencia es importante porque las soluciones utilizadas en el experimento se encontraban a una profundidad de 6 movimientos.
+
+BFS resulta favorable cuando la solución se encuentra a poca profundidad, ya que explora sistemáticamente los niveles hasta llegar a ella. Además, BFS garantiza encontrar una solución de menor profundidad cuando todos los movimientos tienen el mismo costo.
+
+DFS, en cambio, puede dirigirse inicialmente hacia ramas que no conducen directamente a la solución. Por esta razón, su cantidad de nodos explorados puede aumentar considerablemente dependiendo del orden en que se generen los movimientos.
+
+En este experimento, esta característica produjo una diferencia importante entre ambos algoritmos.
+
+---
+
+### 9.4 Resultados generales
+
+Los resultados estadísticos obtenidos fueron:
+
+| Algoritmo | Ejecuciones exitosas | Tiempo promedio (s) | Memoria promedio (KB) | Nodos promedio |
+|---|---:|---:|---:|---:|
+| BFS | 100 | 0.000690 | 16.82 | 80.25 |
+| DFS | 51 | 0.063014 | 2492.67 | 6979.39 |
+
+En el caso de DFS, las estadísticas mostradas corresponden a las ejecuciones que terminaron exitosamente. Las otras 49 ejecuciones alcanzaron el límite establecido de 50.000 nodos.
+
+BFS presentó un tiempo promedio aproximado de **0.00069 segundos**, mientras que DFS presentó un tiempo promedio de aproximadamente **0.06301 segundos** en sus ejecuciones exitosas.
+
+También existe una diferencia importante en la cantidad de nodos explorados. BFS exploró en promedio **80.25 nodos**, mientras que DFS exploró aproximadamente **6979.39 nodos** en las ejecuciones exitosas.
+
+Esto indica que BFS necesitó explorar una cantidad mucho menor de estados para encontrar las soluciones de las instancias utilizadas.
+
+---
+
+### 9.5 Tiempo de ejecución
+
+La siguiente gráfica muestra la comparación del tiempo de ejecución entre BFS y DFS.
+
+![Tiempo de ejecución Puzzle 3x3](../resultados/puzzle/graficas/01_tiempo.png)
+
+BFS presenta un tiempo promedio considerablemente menor que DFS.
+
+El tiempo promedio de BFS fue de aproximadamente:
+
+**0.00069 segundos**
+
+Mientras que DFS presentó:
+
+**0.06301 segundos**
+
+Por lo tanto, en las ejecuciones exitosas analizadas, DFS tardó considerablemente más tiempo que BFS.
+
+Esta diferencia se relaciona principalmente con la cantidad de estados que DFS necesita explorar antes de encontrar una solución.
+
+Debido a que las soluciones se encuentran a profundidad 6, BFS puede avanzar de manera ordenada por los niveles hasta alcanzar la solución, mientras que DFS puede recorrer ramas que no llevan directamente al objetivo.
+
+---
+
+### 9.6 Consumo de memoria
+
+La siguiente gráfica muestra el consumo promedio de memoria de ambos algoritmos.
+
+![Memoria Puzzle 3x3](../resultados/puzzle/graficas/02_memoria.png)
+
+La diferencia de memoria también es considerable.
+
+BFS presentó un consumo promedio de aproximadamente:
+
+**16.82 KB**
+
+Mientras que DFS presentó:
+
+**2492.67 KB**
+
+Esto muestra que, para las ejecuciones analizadas, DFS tuvo un consumo de memoria mucho mayor.
+
+Aunque normalmente DFS se caracteriza por utilizar una frontera de búsqueda menor que BFS, en estas ejecuciones el comportamiento observado estuvo condicionado por la cantidad de nodos explorados y por los estados que debieron mantenerse durante las búsquedas que se prolongaron.
+
+Por lo tanto, los resultados experimentales muestran que en este conjunto particular de instancias BFS presentó un mejor comportamiento tanto en tiempo como en memoria.
+
+---
+
+### 9.7 Nodos explorados
+
+La siguiente gráfica presenta la cantidad promedio de nodos explorados.
+
+![Nodos explorados Puzzle 3x3](../resultados/puzzle/graficas/03_nodos.png)
+
+BFS exploró aproximadamente:
+
+**80.25 nodos en promedio**
+
+Mientras que DFS exploró:
+
+**6979.39 nodos en promedio**
+
+La diferencia es significativa.
+
+BFS pudo encontrar las soluciones recorriendo principalmente los niveles necesarios para alcanzar la profundidad de 6 movimientos.
+
+DFS, por otro lado, dependió mucho más del orden de exploración. Esto hizo que en varias ejecuciones recorriera ramas que no conducían directamente a la solución.
+
+Como resultado, DFS necesitó explorar una cantidad mucho mayor de estados en las ejecuciones que terminaron exitosamente.
+
+---
+
+### 9.8 Ejecuciones exitosas y ejecuciones que alcanzaron el límite
+
+Para analizar la estabilidad de los algoritmos también se contabilizaron las ejecuciones que alcanzaron el límite de 50.000 nodos.
+
+| Algoritmo | Total | Exitosas | Límite alcanzado | Porcentaje |
+|---|---:|---:|---:|---:|
+| BFS | 100 | 100 | 0 | 0% |
+| DFS | 100 | 51 | 49 | 49% |
+
+![Ejecuciones exitosas y límite Puzzle 3x3](../resultados/puzzle/graficas/04_limites.png)
+
+BFS completó las **100 ejecuciones** sin alcanzar el límite experimental.
+
+DFS, en cambio, completó exitosamente **51 ejecuciones** y alcanzó el límite de 50.000 nodos en **49 ejecuciones**, equivalente al **49%** del total.
+
+Este resultado muestra que DFS presentó una mayor variabilidad en su comportamiento.
+
+En algunas configuraciones DFS encontró rápidamente la solución, pero en otras siguió explorando una gran cantidad de estados sin encontrarla antes de alcanzar el límite establecido.
+
+Por el contrario, BFS presentó un comportamiento mucho más estable en las instancias utilizadas.
+
+---
+
+### 9.9 Resultados de las ejecuciones exitosas
+
+Para analizar únicamente las ejecuciones que terminaron encontrando una solución, se obtuvieron los siguientes resultados:
+
+| Algoritmo | Ejecuciones | Tiempo promedio (s) | Tiempo mediana (s) | Memoria promedio (KB) | Memoria mediana (KB) | Nodos promedio | Movimientos promedio | Profundidad promedio |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| BFS | 100 | 0.000690 | 0.000632 | 16.82 | 16.48 | 80.25 | 6.00 | 6.00 |
+| DFS | 51 | 0.063014 | 0.020424 | 2492.67 | 598.16 | 6979.39 | 6715.14 | 6715.14 |
+
+Las ejecuciones exitosas de BFS presentan una profundidad promedio de **6 movimientos**, coincidiendo con la profundidad de las soluciones utilizadas.
+
+En DFS, la profundidad y los movimientos presentan valores mucho mayores debido al comportamiento de búsqueda en profundidad y a la cantidad de estados explorados antes de encontrar la solución.
+
+Estos resultados permiten observar que no solamente existe una diferencia en el tiempo de ejecución, sino también en la cantidad de estados que cada estrategia necesita recorrer antes de completar la búsqueda.
+
+---
+
+### 9.10 Conclusión del Puzzle 3x3
+
+Para las instancias utilizadas en este experimento, **BFS presentó el mejor desempeño general**.
+
+BFS obtuvo:
+
+- Menor tiempo promedio.
+- Menor consumo de memoria.
+- Menor cantidad de nodos explorados.
+- 100% de ejecuciones exitosas.
+- Ninguna ejecución alcanzó el límite experimental.
+
+DFS presentó un comportamiento más variable:
+
+- Mayor tiempo promedio.
+- Mayor consumo de memoria en los resultados registrados.
+- Mayor cantidad de nodos explorados.
+- Solo 51 ejecuciones exitosas.
+- 49 ejecuciones alcanzaron el límite de 50.000 nodos.
+
+La principal razón de esta diferencia está relacionada con la profundidad de las soluciones. Como las soluciones utilizadas tenían una profundidad de 6 movimientos, BFS pudo encontrarlas explorando sistemáticamente los niveles hasta llegar a dicha profundidad.
+
+DFS, en cambio, pudo desviarse hacia ramas que no conducían directamente a la solución.
+
+Por lo tanto, para las instancias utilizadas en este experimento, **BFS resultó más eficiente y estable que DFS**.
+
+---
+
+## 10. Comparación de los Tres Problemas
+
+Los experimentos realizados permiten comparar el comportamiento de BFS y DFS en tres problemas con estructuras de búsqueda diferentes:
+
+- N-Reinas.
+- Mochila 0/1.
+- Puzzle 3x3.
+
+Los resultados muestran que ningún algoritmo fue superior en todos los problemas.
+
+| Característica | N-Reinas | Mochila 0/1 | Puzzle 3x3 |
+|---|---|---|---|
+| Estrategia más favorable | DFS | DFS | BFS |
+| Ventaja principal | Menor tiempo, memoria y nodos | Menor memoria y tiempo | Menor tiempo, memoria y nodos |
+| BFS | Mayor costo en las instancias grandes | Mayor consumo de memoria | Mejor desempeño |
+| DFS | Muy favorable | Favorable | Mayor variabilidad |
+| Influencia de la profundidad | Alta | Media | Alta |
+
+---
+
+### 10.1 N-Reinas
+
+En N-Reinas, DFS presentó mejores resultados porque pudo profundizar rápidamente hasta encontrar una solución completa.
+
+BFS, al recorrer el espacio de búsqueda nivel por nivel, tuvo que mantener una cantidad mucho mayor de estados antes de alcanzar una solución.
+
+Por esta razón, DFS presentó ventajas en tiempo, memoria y cantidad de nodos explorados.
+
+La estructura del problema favorece la búsqueda en profundidad cuando el objetivo es encontrar rápidamente una primera solución válida.
+
+---
+
+### 10.2 Mochila 0/1
+
+En Mochila 0/1, BFS y DFS exploraron la misma cantidad de nodos porque ambos recorrieron el mismo árbol de decisiones.
+
+La diferencia principal estuvo en la forma de administrar la frontera.
+
+BFS mantiene numerosos estados de un mismo nivel, mientras DFS mantiene principalmente la rama que está explorando y las alternativas pendientes.
+
+Por esta razón, DFS presentó un consumo de memoria considerablemente menor y también mejores tiempos en las instancias de mayor tamaño.
+
+En este problema, la ventaja de DFS no se debe a que explore menos nodos, sino principalmente a que utiliza una estructura de búsqueda más pequeña.
+
+---
+
+### 10.3 Puzzle 3x3
+
+En Puzzle 3x3 el comportamiento fue diferente.
+
+BFS presentó mejores resultados porque las soluciones utilizadas tenían una profundidad de 6 movimientos.
+
+Al explorar el espacio por niveles, BFS pudo llegar sistemáticamente a la profundidad donde se encontraban las soluciones.
+
+DFS dependió mucho más del orden de exploración y, como consecuencia, tuvo que recorrer una cantidad considerablemente mayor de estados.
+
+Además, DFS alcanzó el límite de 50.000 nodos en 49 de las 100 simulaciones, mientras que BFS completó todas las ejecuciones sin alcanzar dicho límite.
+
+Por lo tanto, en las instancias utilizadas, BFS fue claramente más favorable para el Puzzle 3x3.
+
+---
+
+### 10.4 Comparación general
+
+Los tres problemas permiten observar que no existe un algoritmo que sea siempre superior.
+
+Los resultados experimentales fueron:
+
+- **N-Reinas → DFS**
+- **Mochila 0/1 → DFS**
+- **Puzzle 3x3 → BFS**
+
+En N-Reinas, DFS fue favorecido por la posibilidad de alcanzar rápidamente una solución completa.
+
+En Mochila 0/1, DFS presentó una ventaja principalmente en el consumo de memoria, ya que ambos algoritmos exploraron la misma cantidad de estados.
+
+En Puzzle 3x3, BFS fue superior porque las soluciones se encontraban a una profundidad pequeña y el recorrido por niveles permitió encontrarlas de manera sistemática.
+
+Esto demuestra que la elección entre BFS y DFS debe realizarse considerando las características específicas del problema.
+
+---
+
+## 11. Conclusiones Generales
+
+Los resultados obtenidos en N-Reinas, Mochila 0/1 y Puzzle 3x3 muestran que el desempeño de BFS y DFS depende directamente de la estructura del espacio de búsqueda, la profundidad de las soluciones, el criterio de terminación y la forma en que se administran los estados.
+
+En **N-Reinas**, DFS presentó una ventaja clara porque encontró rápidamente una solución completa sin necesidad de recorrer grandes cantidades de estados.
+
+En **Mochila 0/1**, BFS y DFS exploraron el mismo número de nodos, pero DFS presentó una ventaja importante en memoria y mejores tiempos en las instancias más grandes debido a que mantiene una frontera de búsqueda mucho menor.
+
+En **Puzzle 3x3**, BFS presentó los mejores resultados. El algoritmo logró completar las 100 ejecuciones sin alcanzar el límite experimental y necesitó en promedio aproximadamente 80 nodos para encontrar las soluciones. DFS, por el contrario, alcanzó el límite de 50.000 nodos en el 49% de las ejecuciones.
+
+Los experimentos permiten resumir el comportamiento de la siguiente manera:
+
+| Problema | Mejor algoritmo | Principal motivo |
+|---|---|---|
+| N-Reinas | **DFS** | Encuentra rápidamente una solución y explora menos estados |
+| Mochila 0/1 | **DFS** | Utiliza considerablemente menos memoria |
+| Puzzle 3x3 | **BFS** | Encuentra soluciones poco profundas de forma sistemática |
+
+Por lo tanto, **BFS no es siempre mejor que DFS, ni DFS es siempre mejor que BFS**.
+
+La estrategia más adecuada depende de factores como:
+
+- Tamaño del espacio de búsqueda.
+- Profundidad esperada de la solución.
+- Cantidad de estados que deben mantenerse en memoria.
+- Criterio utilizado para terminar la búsqueda.
+- Necesidad de encontrar una solución de menor profundidad.
+- Recursos computacionales disponibles.
+
+En conclusión, los experimentos permiten comprobar que la elección de un algoritmo de búsqueda no debe basarse únicamente en su complejidad teórica. Es necesario considerar también el comportamiento práctico sobre el problema específico.
+
+Los tres experimentos muestran precisamente esta diferencia: **DFS fue más favorable en N-Reinas y Mochila 0/1, mientras que BFS fue más favorable en Puzzle 3x3**.
+
+De esta manera, el análisis experimental demuestra cómo una misma estrategia de búsqueda puede presentar resultados muy diferentes dependiendo de la estructura del problema y de las características de las soluciones que se buscan.
